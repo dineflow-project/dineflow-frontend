@@ -1,40 +1,95 @@
-import Image from "next/image";
+// pages/canteen/[canteenId]/vendor/[vendorId].tsx
+"use client";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
-export default function VendorDetailPage({
-  params,
-}: {
-  params: { vendorId: string };
-}) {
-  //Data
-  const mockVendor = new Map();
-  mockVendor.set("001", {
-    name: "Tam sang",
-    image: "/img/cat_meme.jpg",
+const VendorPage = () => {
+  // const router = useRouter();
+  // const { canteenId, vendorId } = router.query;
+
+  const [vendor, setVendor] = useState({
+    canteen_id: 1,
+    name: "Vendor 3",
+    owner_id: {
+      Bool: false,
+      Valid: false,
+    },
+    opening_timestamp: "2023-09-16 08:00:00",
+    closing_timestamp: "2023-09-16 18:00:00",
+    status: "Open",
   });
-  mockVendor.set("002", {
-    name: "Kanom",
-    image: "/img/cat_peek.jpg",
-  });
-  mockVendor.set("003", {
-    name: "Nam pun",
-    image: "/img/cat.jpg",
-  });
+  const [menus, setMenus] = useState([
+    {
+      _id: 1,
+      vendor_id: 3,
+      name: "noodles",
+      price: 15,
+      image_path: "-",
+      description: "Slurpy",
+      is_available: true,
+    },
+    {
+      // check id again when know backend
+      _id: 2,
+      vendor_id: 3,
+      name: "padthai",
+      price: 15,
+      image_path: "-",
+      description: "Slurpy",
+      is_available: true,
+    },
+  ]);
+
+  // useEffect(() => {
+  //   // Fetch vendor details
+  //   fetch(`http://localhost:8090/vendors/${vendorId}`)
+  //     .then((response) => response.json())
+  //     .then((data) => setVendor(data));
+
+  //   // Fetch list of menus
+  //   fetch(`http://localhost:8090/menus/vendors/${vendorId}`)
+  //     .then((response) => response.json())
+  //     .then((data) => setMenus(data));
+  // }, [vendorId]);
+
+  // Placeholder for the checkout function
+  const handleCheckout = () => {
+    // Implement the checkout logic here
+    console.log("Checkout function not implemented");
+  };
+
+  if (!vendor) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="text-center p-5">
-      <div className="flex flex-row my-5">
-        <Image
-          src={mockVendor.get(params.vendorId).image}
-          alt="Vendor Picture"
-          width={0}
-          height={0}
-          sizes="100vw"
-          className="rounded-lg w-[30%]"
-        />
-        <div className="text-md mx-5">
-          Vendor: {mockVendor.get(params.vendorId).name}
-        </div>
+    <div>
+      <h1>{vendor.name}</h1>
+      <p>Open Time: {vendor.opening_timestamp}</p>
+      <p>Close Time: {vendor.closing_timestamp}</p>
+
+      <h2>Menu</h2>
+      <div>
+        {menus.map((menu) => (
+          <div key={menu._id}>
+            {menu.name} - {menu.price}
+            <p>{menu.description}</p>
+            <div>
+              <label htmlFor={`quantity-${menu._id}`}>Quantity:</label>
+              <input
+                type="number"
+                id={`quantity-${menu._id}`}
+                min="0"
+                defaultValue={0} // Set the default quantity to 0
+              />
+            </div>
+          </div>
+        ))}
       </div>
+
+      <button onClick={handleCheckout}>Checkout</button>
     </div>
   );
-}
+};
+
+export default VendorPage;
