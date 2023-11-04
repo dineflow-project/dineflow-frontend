@@ -1,9 +1,9 @@
 import Image from "next/image";
 
-export default function CanteenDetailPage({
+export default function VendorDetailPage({
   params,
 }: {
-  params: { cid: string };
+  params: { vendorId: string };
 }) {
   //Data
   const mockVendor = new Map();
@@ -24,7 +24,7 @@ export default function CanteenDetailPage({
     <div className="text-center p-5">
       <div className="flex flex-row my-5">
         <Image
-          src={mockVendor.get(params.cid).image}
+          src={mockVendor.get(params.vendorId).image}
           alt="Vendor Picture"
           width={0}
           height={0}
@@ -32,7 +32,7 @@ export default function CanteenDetailPage({
           className="rounded-lg w-[30%]"
         />
         <div className="text-md mx-5">
-          Vendor: {mockVendor.get(params.cid).name}
+          Vendor: {mockVendor.get(params.vendorId).name}
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import ShoppingCart from "@/components/ShoppingCart";
 import { useState } from "react";
 
-export default function Canteen() {
+export default function Vendor() {
   return (
     <main className="">
       <div>
