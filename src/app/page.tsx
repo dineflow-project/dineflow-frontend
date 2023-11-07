@@ -1,65 +1,62 @@
+"use client";
 import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { CanteenService, Canteen } from "../services/CanteenService";
 
-const products = [
-  {
-    id: 1,
-    vendor_id: 1,
-    name: "Basic Tea",
-    price: "$35",
-    href: "#",
-    image_path:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    description: "Honey",
-    is_available: true,
-  },
-  {
-    id: 2,
-    vendor_id: 1,
-    name: "Hot Chocolate",
-    price: "$5",
-    href: "#",
-    image_path:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    description: "Chocolate from Belgium",
-    is_available: true,
-  },
-];
+// const canteens = [
+//   {
+//     id: "01",
+//     name: "iCanteen",
+//     price: "$35",
+//     href: "#",
+//     image_path: "/img/cat_meme.jpg",
+//     description: "Honey",
+//     is_available: true,
+//   },
+//   {
+//     id: "02",
+//     name: "Aksorn",
+//     price: "$5",
+//     href: "#",
+//     image_path: "/img/cat_peek.jpg",
+//     description: "Chocolate from Belgium",
+//     is_available: true,
+//   },
+// ];
 
 export default function Home() {
+  const [canteens, setCanteens] = useState<Canteen[]>([]);
+
+  useEffect(() => {
+    // Fetch canteens when the component mounts
+    const fetchCanteens = async () => {
+      try {
+        const canteens = await CanteenService.getAllCanteens();
+        setCanteens(canteens);
+        console.log("canteen data", canteens);
+      } catch (error) {
+        console.error("Error fetching canteens:", error);
+      }
+    };
+
+    fetchCanteens();
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div>Hello</div>
-      <div className="bg-white">
-        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {products.map((product) => (
-              <div key={product.id} className="group relative">
-                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-                  <img
-                    src={product.image_path}
-                    className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                  />
-                </div>
-                <div className="mt-4 flex justify-between">
-                  <div>
-                    <h3 className="text-sm text-gray-700">
-                      <a href={product.href}>
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {product.name}
-                      </a>
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {product.description}
-                    </p>
-                  </div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {product.price}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      <div className="text-center">
+        <h1 className="text-3xl font-bold mb-4">Canteen List</h1>
+        <ul className="space-y-4">
+          {canteens.map((canteen) => (
+            <li
+              key={canteen.id}
+              className="border p-4 border-gray-200 rounded-md hover:bg-cyan-50"
+            >
+              <Link href={`/canteen/${canteen.id}`}>{canteen.name}</Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </main>
   );
