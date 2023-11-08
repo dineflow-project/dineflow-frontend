@@ -18,7 +18,9 @@
     "next-images": "^1.8.5",
     "react": "^18",
     "react-dom": "^18",
-    "supports-color": "^8.1.1"
+    "supports-color": "^8.1.1",
+    "swal": "^0.1.0",
+    "sweetalert2": "^11.9.0"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -2,28 +2,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { CanteenService, Canteen } from "../services/CanteenService";
-
-// const canteens = [
-//   {
-//     id: "01",
-//     name: "iCanteen",
-//     price: "$35",
-//     href: "#",
-//     image_path: "/img/cat_meme.jpg",
-//     description: "Honey",
-//     is_available: true,
-//   },
-//   {
-//     id: "02",
-//     name: "Aksorn",
-//     price: "$5",
-//     href: "#",
-//     image_path: "/img/cat_peek.jpg",
-//     description: "Chocolate from Belgium",
-//     is_available: true,
-//   },
-// ];
+import { getAllCanteens } from "../services/CanteenService";
+import { Canteen } from "@/Interfaces/CanteenInterface";
+import Swal from "sweetalert2";
 
 export default function Home() {
   const [canteens, setCanteens] = useState<Canteen[]>([]);
@@ -32,11 +13,13 @@ export default function Home() {
     // Fetch canteens when the component mounts
     const fetchCanteens = async () => {
       try {
-        const canteens = await CanteenService.getAllCanteens();
-        setCanteens(canteens);
-        console.log("canteen data", canteens);
+        const canteensRes = await getAllCanteens();
+        if (!canteensRes.data) return;
+        setCanteens(canteensRes.data);
+        console.log("canteen data", canteensRes.data);
       } catch (error) {
         console.error("Error fetching canteens:", error);
+        Swal.fire("Error", "Cannot get canteens", "error");
       }
     };
 
