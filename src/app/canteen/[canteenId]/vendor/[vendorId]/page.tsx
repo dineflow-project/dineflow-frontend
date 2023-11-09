@@ -65,7 +65,19 @@ export default function VendorPage({
           price: menu.price,
           amount: quantity,
         };
-      });
+      })
+      .filter((menu) => menu.amount > 0); // Exclude menus with quantity 0
+
+    // Check if there are any selected menus
+    if (selectedMenus.length === 0) {
+      // Display a message indicating that no items were selected
+      Swal.fire(
+        "Warning",
+        "Please select at least one item to order",
+        "warning"
+      );
+      return; // Exit the function without placing the order
+    }
 
     // Prepare the data to be sent to the backend
     const orderData: Order = {
@@ -83,11 +95,25 @@ export default function VendorPage({
       })
       .then((data) => {
         console.log("Order placed successfully", data);
-        // You might want to handle success here, e.g., show a success message
+        // Show success message using SweetAlert
+        Swal.fire("Success!", "Order placed successfully!", "success");
+        // window.location.reload();
+        // Reset the quantity inputs to zero
+        menus
+          .filter((menu) => menu.is_available)
+          .forEach((menu) => {
+            const quantityInput = document.getElementById(
+              `quantity-${menu.id}`
+            ) as HTMLInputElement;
+            if (quantityInput) {
+              quantityInput.value = "0";
+            }
+          });
       })
       .catch((error) => {
         console.error("Error placing order", error);
         // Handle error, e.g., show an error message to the user
+        Swal.fire("Error", "Failed to place order", "error");
       });
   };
   if (!vendor) {
