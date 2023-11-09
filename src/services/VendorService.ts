@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import appConfig from "../configs/config";
-import { Vendor } from '@/app/Interfaces/VendorInterface';
+import { Vendor } from '../Interfaces/VendorInterface';
 import { ApiErrorResponse, ApiResponse } from '@/Interfaces/ApiResponseInterface';
 import { isResponseOk } from '@/utils/AppUtils';
 

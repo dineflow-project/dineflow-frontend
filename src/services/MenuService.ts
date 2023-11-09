@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import appConfig from '../configs/config'; // Define your backend base URL in appConfig
-import { Menu} from '@/app/Interfaces/MenuInterface';
-import { Vendor } from '@/app/Interfaces/VendorInterface';
+import { Menu} from '../Interfaces/MenuInterface';
+import { Vendor } from '../Interfaces/VendorInterface';
 import { ApiErrorResponse, ApiResponse } from '@/Interfaces/ApiResponseInterface';
 import { isResponseOk } from '@/utils/AppUtils';
   
