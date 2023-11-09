@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Order, OrderMenu } from '../Interfaces/OrderInterface';
 import appConfig from '../configs/config'; // Define your backend base URL in appConfig
-import { isResponseOk } from '@/utils/AppUtils';
+import { getEmptyHeaderWithBearerToken, isResponseOk } from '@/utils/AppUtils';
 import { ApiErrorResponse, ApiResponse } from '@/Interfaces/ApiResponseInterface';
 
 
@@ -18,10 +18,11 @@ export const OrderService = {
   // Add other methods using Axios for creating, updating, and deleting orders
 
   createOrder: async (orderRequest: Order) => {
-    // const headers = getEmptyHeaderWithBearerToken();
+    const headers = getEmptyHeaderWithBearerToken();
+    // console.log('Headerrrr',headers);
     const path = `${appConfig.BACKEND_API_URL}/order`;
-    // const axios_res = await axios.post(path, orderRequest, { headers });
-    const axios_res = await axios.post(path, orderRequest);
+    const axios_res = await axios.post(path, orderRequest, { headers });
+    // const axios_res = await axios.post(path, orderRequest);
     const res = axios_res.data as ApiResponse<Order>;
     if(!isResponseOk(res)) {
         throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");

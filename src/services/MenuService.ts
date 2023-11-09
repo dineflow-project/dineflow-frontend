@@ -3,14 +3,15 @@ import appConfig from '../configs/config'; // Define your backend base URL in ap
 import { Menu} from '../Interfaces/MenuInterface';
 import { Vendor } from '../Interfaces/VendorInterface';
 import { ApiErrorResponse, ApiResponse } from '@/Interfaces/ApiResponseInterface';
-import { isResponseOk } from '@/utils/AppUtils';
+import { getEmptyHeaderWithBearerToken, isResponseOk } from "../utils/AppUtils";
   
 const MenuService = {
-  getAllMenus: async (canteenId: bigint, vendorId: bigint, minprice: number, maxprice: number) => {
-    // const headers = getEmptyHeaderWithBearerToken();
+  getAllMenus: async (canteenId: bigint, vendorId: bigint, minprice?: number, maxprice?: number) => {
+    const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/menu?canteen=${canteenId}&vendor=${vendorId}&minprice=${minprice}&maxprice=${maxprice}`;
-    // const axios_res = await axios.get(path, { headers });
-    const axios_res = await axios.get(path);
+    // console.log('path',path)
+    const axios_res = await axios.get(path, { headers });
+    // const axios_res = await axios.get(path);
     const res = axios_res.data as ApiResponse<Menu[]>;
     if(!isResponseOk(res)) {
       throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");

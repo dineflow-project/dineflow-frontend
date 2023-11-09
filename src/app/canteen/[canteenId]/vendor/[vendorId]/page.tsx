@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import { Order, OrderMenu } from "@/Interfaces/OrderInterface";
 import { ChangeEvent } from "react";
 import { isResponseOk } from "@/utils/AppUtils";
+import PriceFilter from "@/components/PriceFilter";
 
 export default function VendorPage({
   params,
@@ -20,7 +21,39 @@ export default function VendorPage({
 }) {
   const [vendor, setVendor] = useState<Vendor>();
   const [menus, setMenus] = useState<Menu[]>([]);
-  // const router = useRouter();
+
+  const [quantityErrors, setQuantityErrors] = useState<
+    Record<number, string | null>
+  >({});
+
+  const role = sessionStorage.getItem("role");
+  const userId = sessionStorage.getItem("userId");
+
+  const handleQuantityInput = (
+    menuId: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const inputValue = event.target.value;
+
+    // Check if the input is a valid positive integer
+    if (
+      !/^\d+$/.test(inputValue) ||
+      inputValue.includes(".") ||
+      parseInt(inputValue) < 0
+    ) {
+      // Set the error message for the specific menu
+      setQuantityErrors((prevErrors) => ({
+        ...prevErrors,
+        [menuId]: "Please enter a valid positive integer.",
+      }));
+    } else {
+      // Clear the error message if the input is valid
+      setQuantityErrors((prevErrors) => ({
+        ...prevErrors,
+        [menuId]: null,
+      }));
+    }
+  };
 
   useEffect(() => {
     if (!params.vendorId) {
@@ -36,22 +69,47 @@ export default function VendorPage({
         console.log(err);
         Swal.fire("Error", "Cannot get vendor", "error");
       });
-
     // Fetch and set the list of menus when the component mounts
-    MenuService.getAllMenusByVendorId(params.vendorId)
-      .then((menuRes) => {
-        if (!menuRes.data) return;
-        setMenus(menuRes.data); // Wrap the data in an array if it's not null
-        console.log("this all menus", menuRes.data);
-      })
-      .catch((err) => {
-        console.log(err);
-        Swal.fire("Error", "Cannot get vendor", "error");
-      });
+    // if (vendor) {
+    //   MenuService.getAllMenus(vendor.canteen_id, params.vendorId, 0, 100)
+    //     .then((menuRes) => {
+    //       if (!menuRes.data) return;
+    //       setMenus(menuRes.data); // Wrap the data in an array if it's not null
+    //       console.log("this all menus", menuRes.data);
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //       Swal.fire("Error", "Cannot get vendor", "error");
+    //     });
+    // }
   }, [params.vendorId]);
 
-  // Placeholder for the checkout function
+  useEffect(() => {
+    if (vendor) {
+      MenuService.getAllMenus(vendor.canteen_id, params.vendorId, 0, 100)
+        .then((menuRes) => {
+          if (!menuRes.data) return;
+          setMenus(menuRes.data); // Wrap the data in an array if it's not null
+          console.log("this all menus", menuRes.data);
+        })
+        .catch((err) => {
+          console.log(err);
+          Swal.fire("Error", "Cannot get vendor", "error");
+        });
+    }
+  }, [vendor]);
+
   const handleCheckout = () => {
+    // Check if there's an error before proceeding with checkout
+    const hasErrors = Object.values(quantityErrors).some(
+      (error) => error !== null
+    );
+    if (hasErrors) {
+      // Display a message indicating the error
+      Swal.fire("Warning", "Please enter a valid positive integer.", "warning");
+      return;
+    }
+
     // Get the selected menus and their quantities
     const selectedMenus: OrderMenu[] = menus
       .filter((menu) => menu.is_available)
@@ -79,43 +137,68 @@ export default function VendorPage({
       return; // Exit the function without placing the order
     }
 
-    // Prepare the data to be sent to the backend
-    const orderData: Order = {
-      order_menus: selectedMenus,
-      user_id: vendor?.owner_id, // You might need to get this from your authentication system
-      vendor_id: params.vendorId.toString(),
-    };
+    // Calculate the total amount
+    const totalAmount = selectedMenus.reduce(
+      (total, menu) => total + menu.price * menu.amount,
+      0
+    );
 
-    OrderService.createOrder(orderData)
-      .then((response) => {
-        if (!isResponseOk(response)) {
-          throw new Error("Failed to place order");
+    // Show a confirmation message with the total amount
+    Swal.fire({
+      title: "Confirm Order",
+      html: `Total Amount: $${totalAmount.toFixed(2)}`,
+      showCancelButton: true,
+      confirmButtonText: "Place Order",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        if (userId) {
+          // Prepare the data to be sent to the backend
+          const orderData: Order = {
+            order_menus: selectedMenus,
+            user_id: userId,
+            vendor_id: params.vendorId.toString(),
+          };
+
+          OrderService.createOrder(orderData)
+            .then((response) => {
+              if (!isResponseOk(response)) {
+                throw new Error("Failed to place order");
+              }
+              return response.data;
+            })
+            .then((data) => {
+              console.log("Order placed successfully", data);
+              // Show success message using SweetAlert
+              Swal.fire({
+                icon: "success",
+                title: "Success!",
+                html: "Order placed successfully",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              // Clear all quantity inputs
+              menus
+                .filter((menu) => menu.is_available)
+                .forEach((menu) => {
+                  const quantityInput = document.getElementById(
+                    `quantity-${menu.id}`
+                  ) as HTMLInputElement;
+                  if (quantityInput) {
+                    quantityInput.value = "0";
+                  }
+                });
+            })
+            .catch((error) => {
+              console.error("Error placing order", error);
+              // Handle error, e.g., show an error message to the user
+              Swal.fire("Error", "Failed to place order", "error");
+            });
         }
-        return response.data;
-      })
-      .then((data) => {
-        console.log("Order placed successfully", data);
-        // Show success message using SweetAlert
-        Swal.fire("Success!", "Order placed successfully!", "success");
-        // window.location.reload();
-        // Reset the quantity inputs to zero
-        menus
-          .filter((menu) => menu.is_available)
-          .forEach((menu) => {
-            const quantityInput = document.getElementById(
-              `quantity-${menu.id}`
-            ) as HTMLInputElement;
-            if (quantityInput) {
-              quantityInput.value = "0";
-            }
-          });
-      })
-      .catch((error) => {
-        console.error("Error placing order", error);
-        // Handle error, e.g., show an error message to the user
-        Swal.fire("Error", "Failed to place order", "error");
-      });
+      }
+    });
   };
+
   if (!vendor) {
     return <div>Loading...</div>;
   }
@@ -127,6 +210,7 @@ export default function VendorPage({
         (Time: {vendor.opening_timestamp} - {vendor.closing_timestamp})
       </h3>
       <h2 className="text-2xl font-bold">Menu List</h2>
+      <PriceFilter minNumber={0} maxNumber={100} />
       <div className="bg-slate-50 p-5 rounded-lg">
         {menus.filter((menu) => menu.is_available).length === 0 ? (
           <p className="text-red-500 font-semibold p-10 m-10">
@@ -145,10 +229,9 @@ export default function VendorPage({
                     <Image
                       src={menu.image_path}
                       alt="Menu Picture"
-                      width={200}
-                      height={150}
-                      objectFit="fill"
                       className="rounded-lg"
+                      width={200}
+                      height={200}
                     />
                   </div>
                   <div className="w-2/3 pl-4">
@@ -168,8 +251,14 @@ export default function VendorPage({
                         id={`quantity-${menu.id}`}
                         min="0"
                         defaultValue={0}
+                        onChange={(e) => handleQuantityInput(menu.id, e)}
                         className="w-16 h-10 border border-gray-300 rounded-md px-2 ml-2"
                       />
+                      {quantityErrors[menu.id] && (
+                        <p className="text-red-500 text-sm mt-2">
+                          {quantityErrors[menu.id]}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
