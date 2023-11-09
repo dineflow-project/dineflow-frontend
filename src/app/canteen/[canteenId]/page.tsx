@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import VendorService from "../../../services/VendorService";
-import { Vendor } from "@/app/Interfaces/VendorInterface";
+import { Vendor } from "../../../Interfaces/VendorInterface";
 import Link from "next/link";
 import Swal from "sweetalert2";
 import { getCanteenByID } from "@/services/CanteenService";

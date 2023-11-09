@@ -18,8 +18,8 @@ export default function Home() {
         setCanteens(canteensRes.data);
         console.log("canteen data", canteensRes.data);
       } catch (error) {
-        console.error("Error fetching canteens:", error);
-        Swal.fire("Error", "Cannot get canteens", "error");
+        // console.error("Error fetching canteens:", error);
+        // Swal.fire("Error", "Cannot get canteens", "error");
       }
     };
 

@@ -1,17 +1,18 @@
 import React, { useState } from "react";
 
-interface FilterProps {
-  onFilter: (min: number, max: number) => void;
-}
-
-export default function Filter({ onFilter }: FilterProps) {
+export default function PriceFilter({
+  minNumber,
+  maxNumber,
+}: {
+  minNumber?: number;
+  maxNumber?: number;
+}) {
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
   const handleFilter = () => {
     const min = parseFloat(minPrice);
     const max = parseFloat(maxPrice);
-    onFilter(min, max);
   };
 
   return (

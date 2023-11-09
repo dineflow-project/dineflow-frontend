@@ -8,6 +8,7 @@ const nextConfig = {
       "images.unsplash.com",
     ],
   },
+  reactStrictMode: false,
 };
 
 module.exports = nextConfig;
