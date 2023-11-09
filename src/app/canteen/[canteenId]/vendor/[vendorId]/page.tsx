@@ -2,13 +2,16 @@
 "use client";
 import router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Vendor } from "@/app/Interfaces/VendorInterface";
-import { Menu } from "@/app/Interfaces/MenuInterface";
+import { Vendor } from "../../../../../Interfaces/VendorInterface";
+import { Menu } from "../../../../../Interfaces/MenuInterface";
 import VendorService from "@/services/VendorService";
 import MenuService from "@/services/MenuService";
+import OrderService from "@/services/OrderService";
 import Image from "next/image";
 import Swal from "sweetalert2";
-import { OrderMenu } from "@/Interfaces/OrderInterface";
+import { Order, OrderMenu } from "@/Interfaces/OrderInterface";
+import { ChangeEvent } from "react";
+import { isResponseOk } from "@/utils/AppUtils";
 
 export default function VendorPage({
   params,
@@ -17,7 +20,6 @@ export default function VendorPage({
 }) {
   const [vendor, setVendor] = useState<Vendor>();
   const [menus, setMenus] = useState<Menu[]>([]);
-  const [cart, setCart] = useState<OrderMenu[]>([]);
   // const router = useRouter();
 
   useEffect(() => {
@@ -50,10 +52,44 @@ export default function VendorPage({
 
   // Placeholder for the checkout function
   const handleCheckout = () => {
-    // Implement the checkout logic here
-    console.log("Checkout function not implemented");
-  };
+    // Get the selected menus and their quantities
+    const selectedMenus: OrderMenu[] = menus
+      .filter((menu) => menu.is_available)
+      .map((menu) => {
+        const quantity = parseInt(
+          (document.getElementById(`quantity-${menu.id}`) as HTMLInputElement)
+            .value
+        );
+        return {
+          menu_id: menu.id.toString(),
+          price: menu.price,
+          amount: quantity,
+        };
+      });
 
+    // Prepare the data to be sent to the backend
+    const orderData: Order = {
+      order_menus: selectedMenus,
+      user_id: vendor?.owner_id, // You might need to get this from your authentication system
+      vendor_id: params.vendorId.toString(),
+    };
+
+    OrderService.createOrder(orderData)
+      .then((response) => {
+        if (!isResponseOk(response)) {
+          throw new Error("Failed to place order");
+        }
+        return response.data;
+      })
+      .then((data) => {
+        console.log("Order placed successfully", data);
+        // You might want to handle success here, e.g., show a success message
+      })
+      .catch((error) => {
+        console.error("Error placing order", error);
+        // Handle error, e.g., show an error message to the user
+      });
+  };
   if (!vendor) {
     return <div>Loading...</div>;
   }
