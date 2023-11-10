@@ -21,14 +21,14 @@ export default function VendorPage({
 }) {
   const [vendor, setVendor] = useState<Vendor>();
   const [menus, setMenus] = useState<Menu[]>([]);
-
+  // const [priceRange,setPriceRange] = useState({min:null,max:null});
   const [quantityErrors, setQuantityErrors] = useState<
     Record<number, string | null>
   >({});
-
+  console.log("order session storage", sessionStorage);
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("userId");
-
+  console.log("roleeeeee", role);
   const handleQuantityInput = (
     menuId: number,
     event: React.ChangeEvent<HTMLInputElement>
