@@ -3,11 +3,13 @@ import React, { useState, ChangeEvent, FormEvent } from "react";
 import { login } from "../../services/AuthService";
 import Swal from "sweetalert2";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export default function Signin() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { setLoggedIn } = useAuth();
 
   //   const resetForm = () => {
   //     setEmail("");
@@ -27,6 +29,7 @@ export default function Signin() {
     try {
       const response = await login(email, password);
       console.log(response);
+      setLoggedIn(true); // Update the global state
     } catch (error) {
       console.log(error);
       Swal.fire({
@@ -42,7 +45,9 @@ export default function Signin() {
       title: "Success",
       text: "Login success",
     });
+    // setIsLoggedIn(true);
     router.push("/");
+    // window.location.reload();
   };
 
   return (

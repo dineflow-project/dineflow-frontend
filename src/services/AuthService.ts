@@ -3,11 +3,7 @@ import { ApiLoginResponse, ApiErrorResponse, ApiResponse } from "../Interfaces/A
 import appConfig from "../configs/config";
 import { isResponseOk } from "../utils/AppUtils";
 import { UserInterface } from "../Interfaces/UserInterface";
-
-const addHoursToDate = (d: Date, h: number) => {
-    d.setTime(d.getTime() + (h*60*60*1000));
-    return d
-}
+import { addHoursToDate } from "../utils/AppUtils";
 
 export const login = async (email: string, password: string) => {
     const path = `${appConfig.BACKEND_API_URL}/api/auth/login`;
