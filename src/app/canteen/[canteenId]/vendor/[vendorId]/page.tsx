@@ -21,14 +21,17 @@ export default function VendorPage({
 }) {
   const [vendor, setVendor] = useState<Vendor>();
   const [menus, setMenus] = useState<Menu[]>([]);
-  // const [priceRange,setPriceRange] = useState({min:null,max:null});
   const [quantityErrors, setQuantityErrors] = useState<
     Record<number, string | null>
   >({});
+  const [minFilterPrice, setMinFilterPrice] = useState<number | null>(null);
+  const [maxFilterPrice, setMaxFilterPrice] = useState<number | null>(null);
+
   console.log("order session storage", sessionStorage);
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("userId");
   console.log("roleeeeee", role);
+
   const handleQuantityInput = (
     menuId: number,
     event: React.ChangeEvent<HTMLInputElement>
@@ -55,6 +58,11 @@ export default function VendorPage({
     }
   };
 
+  const handlePriceFilter = (min: number | null, max: number | null) => {
+    setMinFilterPrice(min);
+    setMaxFilterPrice(max);
+  };
+
   useEffect(() => {
     if (!params.vendorId) {
       return;
@@ -69,24 +77,15 @@ export default function VendorPage({
         console.log(err);
         Swal.fire("Error", "Cannot get vendor", "error");
       });
-    // Fetch and set the list of menus when the component mounts
-    // if (vendor) {
-    //   MenuService.getAllMenus(vendor.canteen_id, params.vendorId, 0, 100)
-    //     .then((menuRes) => {
-    //       if (!menuRes.data) return;
-    //       setMenus(menuRes.data); // Wrap the data in an array if it's not null
-    //       console.log("this all menus", menuRes.data);
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //       Swal.fire("Error", "Cannot get vendor", "error");
-    //     });
-    // }
   }, [params.vendorId]);
-
   useEffect(() => {
     if (vendor) {
-      MenuService.getAllMenus(vendor.canteen_id, params.vendorId, 0, 100)
+      MenuService.getAllMenus(
+        vendor.canteen_id,
+        params.vendorId,
+        minFilterPrice,
+        maxFilterPrice
+      )
         .then((menuRes) => {
           if (!menuRes.data) return;
           setMenus(menuRes.data); // Wrap the data in an array if it's not null
@@ -97,7 +96,7 @@ export default function VendorPage({
           Swal.fire("Error", "Cannot get vendor", "error");
         });
     }
-  }, [vendor]);
+  }, [vendor, minFilterPrice, maxFilterPrice]);
 
   const handleCheckout = () => {
     // Check if there's an error before proceeding with checkout
@@ -210,7 +209,11 @@ export default function VendorPage({
         (Time: {vendor.opening_timestamp} - {vendor.closing_timestamp})
       </h3>
       <h2 className="text-2xl font-bold">Menu List</h2>
-      <PriceFilter minNumber={0} maxNumber={100} />
+      <PriceFilter
+        minNumber={minFilterPrice}
+        maxNumber={maxFilterPrice}
+        onFilter={handlePriceFilter}
+      />
       <div className="bg-slate-50 p-5 rounded-lg">
         {menus.filter((menu) => menu.is_available).length === 0 ? (
           <p className="text-red-500 font-semibold p-10 m-10">

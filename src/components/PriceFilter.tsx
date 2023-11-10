@@ -3,16 +3,20 @@ import React, { useState } from "react";
 export default function PriceFilter({
   minNumber,
   maxNumber,
+  onFilter,
 }: {
   minNumber?: number;
   maxNumber?: number;
+  onFilter: (min: number | null, max: number | null) => void;
 }) {
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
+  const [minPrice, setMinPrice] = useState(minNumber?.toString() || "");
+  const [maxPrice, setMaxPrice] = useState(maxNumber?.toString() || "");
 
   const handleFilter = () => {
-    const min = parseFloat(minPrice);
-    const max = parseFloat(maxPrice);
+    // Convert empty string to null for the API call
+    const min = minPrice ? parseFloat(minPrice) : null;
+    const max = maxPrice ? parseFloat(maxPrice) : null;
+    onFilter(min, max);
   };
 
   return (
