@@ -27,19 +27,31 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold mb-4">Canteen List</h1>
-        <ul className="space-y-4">
-          {canteens.map((canteen) => (
-            <li
-              key={canteen.id}
-              className="border p-4 border-gray-200 rounded-md hover:bg-cyan-50"
-            >
-              <Link href={`/canteen/${canteen.id}`}>{canteen.name}</Link>
-            </li>
-          ))}
-        </ul>
+    <main className="container mx-auto p-16">
+      <div className="text-center mb-4">
+        <h1 className="text-3xl font-bold">Canteen List</h1>
+      </div>
+
+      <div className="flex flex-wrap m-4 ">
+        {canteens.map((canteen) => (
+          <div
+            key={canteen.id}
+            className="w-full sm:w-1/2 md:w-1/3 lg:w-1/3 p-4 lg:p-8"
+          >
+            <Link href={`/canteen/${canteen.id}`}>
+              <div className="border border-gray-200 hover:border-cyan-200  rounded-md hover:bg-cyan-50 transition duration-300 ease-in-out">
+                <p className="text-lg font-semibold text-center mt-2">
+                  {canteen.name}
+                </p>
+                <img
+                  src={canteen.image_path} // Assuming there's an image_url property in your canteen object
+                  alt={`Image for ${canteen.name}`}
+                  className="mt-4 rounded-md w-full h-60 object-cover"
+                />
+              </div>
+            </Link>
+          </div>
+        ))}
       </div>
     </main>
   );

@@ -1,24 +1,52 @@
 import React, { useState } from "react";
 
 export default function PriceFilter({
-  minNumber,
-  maxNumber,
   onFilter,
 }: {
-  minNumber?: number;
-  maxNumber?: number;
   onFilter: (min: number | null, max: number | null) => void;
 }) {
-  const [minPrice, setMinPrice] = useState(minNumber?.toString() || "");
-  const [maxPrice, setMaxPrice] = useState(maxNumber?.toString() || "");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [validationError, setValidationError] = useState("");
 
-  const handleFilter = () => {
-    // Convert empty string to null for the API call
-    const min = minPrice ? parseFloat(minPrice) : null;
-    const max = maxPrice ? parseFloat(maxPrice) : null;
-    onFilter(min, max);
+  const validateAndConvertPrice = (price: string): number | null => {
+    if (price.trim() === "") {
+      // If the input is empty, treat it as no filter (null)
+      return null;
+    }
+    const parsedPrice = parseFloat(price);
+    // Check if the parsed price is a number and not negative or a fraction.
+    if (
+      !isNaN(parsedPrice) &&
+      parsedPrice >= 0 &&
+      parsedPrice === Math.floor(parsedPrice)
+    ) {
+      return parsedPrice;
+    } else {
+      // If the input is not a valid positive integer or zero, set an error message.
+      setValidationError("Please enter a valid non-negative integer.");
+      return null;
+    }
   };
 
+  const handleFilter = () => {
+    // Reset validation error
+    setValidationError("");
+
+    const min = validateAndConvertPrice(minPrice);
+    const max = validateAndConvertPrice(maxPrice);
+    // Check if min is greater than max
+    if (min !== null && max !== null && min > max) {
+      setValidationError(
+        "Maximum price must be greater than or equal to minimum price."
+      );
+      return;
+    }
+    // If min or max is not null, call the filter callback.
+    if (min !== null || max !== null) {
+      onFilter(min, max);
+    }
+  };
   return (
     <div className="bg-gray-100 p-4 rounded-lg shadow mb-4">
       <h2 className="text-xl font-semibold mb-2">Filter by Price</h2>
@@ -56,6 +84,9 @@ export default function PriceFilter({
           </button>
         </div>
       </div>
+      {validationError && (
+        <div className="text-red-500 text-sm mt-2">{validationError}</div>
+      )}
     </div>
   );
 }

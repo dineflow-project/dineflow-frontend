@@ -21,7 +21,7 @@ function classNames(...classes: string[]) {
 }
 
 const TopMenu = () => {
-  const { isLoggedIn, setLoggedIn } = useAuth();
+  const { isLoggedIn } = useAuth();
   const router = useRouter();
   // const [isLoggedIn, setIsLoggedIn] = useState(false);
   // // const accessToken = sessionStorage.getItem("accessToken");

@@ -1,6 +1,6 @@
 // pages/canteen/[canteenId]/vendor/[vendorId].tsx
 "use client";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Vendor } from "../../../../../Interfaces/VendorInterface";
 import { Menu } from "../../../../../Interfaces/MenuInterface";
@@ -13,6 +13,12 @@ import { Order, OrderMenu } from "@/Interfaces/OrderInterface";
 import { ChangeEvent } from "react";
 import { isResponseOk } from "@/utils/AppUtils";
 import PriceFilter from "@/components/PriceFilter";
+import ReviewService from "@/services/ReviewService";
+import {
+  StarIcon,
+  ClockIcon,
+  ArrowRightIcon,
+} from "@heroicons/react/24/outline";
 
 export default function VendorPage({
   params,
@@ -21,12 +27,14 @@ export default function VendorPage({
 }) {
   const [vendor, setVendor] = useState<Vendor>();
   const [menus, setMenus] = useState<Menu[]>([]);
+  const [score, setScore] = useState<number | undefined>(undefined); // Changed to allow for null
   const [quantityErrors, setQuantityErrors] = useState<
     Record<number, string | null>
   >({});
   const [minFilterPrice, setMinFilterPrice] = useState<number | null>(null);
   const [maxFilterPrice, setMaxFilterPrice] = useState<number | null>(null);
 
+  const router = useRouter();
   console.log("order session storage", sessionStorage);
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("userId");
@@ -63,6 +71,7 @@ export default function VendorPage({
     setMaxFilterPrice(max);
   };
 
+  // vendor data
   useEffect(() => {
     if (!params.vendorId) {
       return;
@@ -77,7 +86,16 @@ export default function VendorPage({
         console.log(err);
         Swal.fire("Error", "Cannot get vendor", "error");
       });
+    ReviewService.getAvgReviewScoreByVendorId(params.vendorId.toString()).then(
+      (reviewRes) => {
+        setScore(reviewRes.data);
+      }
+    );
   }, [params.vendorId]);
+
+  //avg acore
+
+  // filter menu
   useEffect(() => {
     if (vendor) {
       MenuService.getAllMenus(
@@ -96,7 +114,7 @@ export default function VendorPage({
           Swal.fire("Error", "Cannot get vendor", "error");
         });
     }
-  }, [vendor, minFilterPrice, maxFilterPrice]);
+  }, [vendor, params.vendorId, minFilterPrice, maxFilterPrice]);
 
   const handleCheckout = () => {
     // Check if there's an error before proceeding with checkout
@@ -204,11 +222,41 @@ export default function VendorPage({
 
   return (
     <div className="p-10 space-y-4 ">
-      <h1 className="text-3xl font-bold">{vendor.name}</h1>
-      <h3 className="text-xl font-regular">
-        (Time: {vendor.opening_timestamp} - {vendor.closing_timestamp})
-      </h3>
+      <div className="flex items-center space-x-4 mb-4">
+        <Image
+          src={vendor.image_path}
+          alt={`Image for ${vendor.name}`}
+          className="rounded-lg"
+          width={100}
+          height={100}
+        />
+        <div>
+          <h1 className="text-3xl font-bold">{vendor.name}</h1>
+          <div className="flex items-center mb-2">
+            <ClockIcon className="h-4 w-4 mr-2 text-gray-500" />
+            <p className="text-gray-600">
+              {vendor.opening_timestamp} - {vendor.closing_timestamp}
+            </p>
+          </div>
+          {score !== null && (
+            <div className="flex items-center mb-2">
+              <StarIcon className="h-4 w-4 mr-2 text-gray-500" />
+              <p className="text-gray-600">{score}</p>
+            </div>
+          )}
+
+          <div
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => router.push(`/reviews/${params.vendorId}`)}
+          >
+            <span className="text-indigo-700">All Reviews</span>
+            <ArrowRightIcon className="h-5 w-5 text-indigo-700" />
+          </div>
+        </div>
+      </div>
       <h2 className="text-2xl font-bold">Menu List</h2>
+
+      {/* filter */}
       <PriceFilter
         minNumber={minFilterPrice}
         maxNumber={maxFilterPrice}

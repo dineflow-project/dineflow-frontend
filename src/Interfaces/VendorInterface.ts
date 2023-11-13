@@ -6,4 +6,6 @@ export interface Vendor {
     opening_timestamp: string;
     closing_timestamp: string;
     status: 'Open' | 'Close';
+    image_path: string;
+    avgScore?: number;
   }
