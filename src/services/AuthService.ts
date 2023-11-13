@@ -22,7 +22,10 @@ export const login = async (email: string, password: string) => {
     if(res.data != null) {
         sessionStorage.setItem("userId", res.data.id)
         sessionStorage.setItem("role", res.data.role)
+        sessionStorage.setItem("name", res.data.name)
+        sessionStorage.setItem("email", res.data.name)
     }
+    // console.log("login api",sessionStorage)
     return res;
 
     // const UserPath = `${appConfig.BACKEND_API_URL}/${res.data?.id}`;

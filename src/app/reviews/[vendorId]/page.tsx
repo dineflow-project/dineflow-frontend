@@ -79,46 +79,48 @@ export default function Review({ params }: { params: { vendorId: bigint } }) {
 
   return (
     <div className="container mx-auto p-8">
-      <h2 className="text-xl font-bold mb-4">Submit a Review</h2>
-      <form className="max-w-md">
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600">
-            Score:
-          </label>
-          <select
-            value={newReview.score}
-            onChange={(e) =>
-              setNewReview({ ...newReview, score: parseInt(e.target.value) })
-            }
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+      <div className="bg-cyan-50 rounded-md p-4 border border-cyan-200">
+        <h2 className="text-xl font-bold mb-4">Submit a Review</h2>
+        <form className="max-w-md">
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              Score:
+            </label>
+            <select
+              value={newReview.score}
+              onChange={(e) =>
+                setNewReview({ ...newReview, score: parseInt(e.target.value) })
+              }
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            >
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-600">
+              Description:
+            </label>
+            <textarea
+              value={newReview.description}
+              onChange={(e) =>
+                setNewReview({ ...newReview, description: e.target.value })
+              }
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleReviewSubmit}
+            className="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
           >
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-        </div>
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-600">
-            Description:
-          </label>
-          <textarea
-            value={newReview.description}
-            onChange={(e) =>
-              setNewReview({ ...newReview, description: e.target.value })
-            }
-            className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-          />
-        </div>
-        <button
-          type="button"
-          onClick={handleReviewSubmit}
-          className="bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600"
-        >
-          Submit Review
-        </button>
-      </form>
+            Submit Review
+          </button>
+        </form>
+      </div>
 
       <h1 className="text-xl font-bold mt-8">Reviews for Vendor</h1>
       <h3> Average Score: {avgScore ? avgScore.toFixed(2) : "no review"}</h3>

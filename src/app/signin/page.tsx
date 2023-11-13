@@ -9,7 +9,7 @@ export default function Signin() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { setLoggedIn } = useAuth();
+  // const { setLoggedIn } = useAuth();
 
   //   const resetForm = () => {
   //     setEmail("");
@@ -29,7 +29,8 @@ export default function Signin() {
     try {
       const response = await login(email, password);
       console.log(response);
-      setLoggedIn(true); // Update the global state
+      // setLoggedIn(true); // Update the global state
+      console.log("session storage after login", sessionStorage);
     } catch (error) {
       console.log(error);
       Swal.fire({
@@ -46,7 +47,9 @@ export default function Signin() {
       text: "Login success",
     });
     // setIsLoggedIn(true);
+    router.refresh();
     router.push("/");
+
     // window.location.reload();
   };
 
@@ -119,7 +122,7 @@ export default function Signin() {
           <p className="mt-10 text-center text-sm text-gray-500">
             Not a member?{" "}
             <a
-              href="/register"
+              href="/signup"
               className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
             >
               Create an account

@@ -11,23 +11,30 @@ import { addHoursToDate } from "../../utils/AppUtils";
 //   loading?: boolean;
 // }
 
-interface AuthContextType {
-  isLoggedIn: boolean;
-  setLoggedIn: (loggedIn: boolean) => void;
+// interface AuthContextType {
+//   isLoggedIn: boolean;
+//   setLoggedIn: (loggedIn: boolean) => void;
+// }
+export interface AuthContextInterface {
+  isAuthenticated?: boolean;
+  user?: UserInterface;
+  loading?: boolean;
 }
 
-// const authContext = createContext<AuthContextInterface>({});
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const authContext = createContext<AuthContextInterface>({});
+// const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<UserInterface | undefined>();
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // let interval: NodeJS.Timeout | undefined; // Define interval here
 
-  const setLoggedIn = (loggedIn: boolean) => {
-    setIsLoggedIn(loggedIn);
-  };
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // const setLoggedIn = (loggedIn: boolean) => {
+  //   setIsLoggedIn(loggedIn);
+  // };
 
   useEffect(() => {
     setLoading(true);
@@ -55,24 +62,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     function ForceLogout() {
       clearInterval(interval);
-      sessionStorage.removeItem("accessToken");
-      sessionStorage.removeItem("token_expires");
-      router.push("/signout");
-      // Swal.fire("Error", "Please log in", "error");
+      sessionStorage.clear();
+      // sessionStorage.removeItem("accessToken");
+      // sessionStorage.removeItem("token_expires");
+      router.push("/signin");
+
+      Swal.fire("Error", "Please log in", "error");
     }
     setLoading(false);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setLoggedIn }}>
+    <authContext.Provider value={{ isAuthenticated: !!user, user, loading }}>
       {children}
-    </AuthContext.Provider>
-
-    // <authContext.Provider value={{ isAuthenticated: !!user, user, loading }}>
-    //   {children}
-    // </authContext.Provider>
+    </authContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(authContext);
