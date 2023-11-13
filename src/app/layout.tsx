@@ -2,7 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import TopMenu from "@/components/TopMenu";
-import { AuthProvider } from "@/components/auth/AuthProvider";
+import { useAuth, AuthProvider } from "@/components/auth/AuthProvider";
+import { useEffect } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,10 +17,26 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // const { isAuthenticated, user, loading } = useAuth();
+  // // Use useEffect to reload the TopMenu component when the authentication state changes
+  // useEffect(() => {
+  //   // You can perform any additional actions here when the authentication state changes
+  //   console.log(
+  //     "Authentication state changed:",
+  //     isAuthenticated,
+  //     user,
+  //     loading
+  //   );
+  // }, [isAuthenticated, user, loading]);
   return (
     <AuthProvider>
       <html lang="en">
         <body className={inter.className}>
+          {/* <TopMenu
+            isAuthenticated={isAuthenticated}
+            user={user}
+            loading={loading}
+          /> */}
           <TopMenu />
           {children}
         </body>

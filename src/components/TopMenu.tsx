@@ -11,6 +11,7 @@ import Link from "next/link";
 import Swal from "sweetalert2";
 import { useAuth } from "./auth/AuthProvider";
 import { useRouter } from "next/navigation";
+// import { useUser } from "@/hooks/useUser";
 const navigation = [
   { name: "All Canteens", href: "/", current: true },
   { name: "Order History", href: "/orders", current: false },
@@ -21,31 +22,30 @@ function classNames(...classes: string[]) {
 }
 
 const TopMenu = () => {
-  const { isLoggedIn } = useAuth();
+  // const { isLoggedIn } = useAuth();
+  const { isAuthenticated, user, loading } = useAuth();
   const router = useRouter();
-  // const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // // const accessToken = sessionStorage.getItem("accessToken");
-  // // const isLoggedIn = accessToken !== null;
-  // useEffect(() => {
-  //   // Use useEffect to make sure code runs after component has mounted
-  //   const accessToken = sessionStorage.getItem("accessToken");
-  //   setIsLoggedIn(accessToken !== null);
-  // }, [isLoggedIn]);
+  // You can use isAuthenticated, user, and loading in your component logic
+  // console.log(
+  //   "TopMenu component rendering with authentication state:",
+  //   isAuthenticated,
+  //   user,
+  //   loading
+  // );
+  const role = sessionStorage.getItem("role");
+  const userId = sessionStorage.getItem("userId");
+  // console.log("userId from sessionStorage ", user?.id, " role ", user?.role);
+  // console.log("top menuu sessionStorage", sessionStorage);
 
-  console.log("login ngae", isLoggedIn);
   const logout = () => {
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("token_expires");
-    sessionStorage.removeItem("userId");
-    sessionStorage.removeItem("role");
-    setLoggedIn(false);
-    // setIsLoggedIn(false);
-    console.log("logout");
+    sessionStorage.clear();
+    console.log("logout", sessionStorage);
     Swal.fire({
       icon: "success",
       title: "Logout Success",
       text: "You have successfully logged out",
     }).then(() => {
+      router.refresh();
       router.push("/");
     });
   };
@@ -101,7 +101,7 @@ const TopMenu = () => {
                 </button>
 
                 {/* Profile dropdown */}
-                {isLoggedIn ? (
+                {userId ? (
                   <Menu as="div" className="relative ml-3">
                     <div>
                       <Menu.Button className="relative flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">

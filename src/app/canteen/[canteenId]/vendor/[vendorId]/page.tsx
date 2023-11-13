@@ -33,12 +33,12 @@ export default function VendorPage({
   >({});
   const [minFilterPrice, setMinFilterPrice] = useState<number | null>(null);
   const [maxFilterPrice, setMaxFilterPrice] = useState<number | null>(null);
-
+  console.log("in the page order", sessionStorage);
   const router = useRouter();
-  console.log("order session storage", sessionStorage);
+  // console.log("order session storage", sessionStorage);
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("userId");
-  console.log("roleeeeee", role);
+  // console.log("roleeeeee", role);
 
   const handleQuantityInput = (
     menuId: number,
