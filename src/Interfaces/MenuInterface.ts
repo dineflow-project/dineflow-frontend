@@ -5,5 +5,5 @@ export interface Menu{
     price: number;           // Use number for DECIMAL in TypeScript
     image_path: string;
     description: string | null;
-    is_available:boolean  // Allow null for description
+    is_available: 'yes' | 'no'  // Allow null for description
   }

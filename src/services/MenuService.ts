@@ -8,7 +8,8 @@ import { getEmptyHeaderWithBearerToken, isResponseOk } from "../utils/AppUtils";
 const MenuService = {
   getAllMenus: async (canteenId: bigint, vendorId: bigint, minprice?: number, maxprice?: number) => {
     const headers = getEmptyHeaderWithBearerToken();
-    const path = `${appConfig.BACKEND_API_URL}/menu?canteen=${canteenId}&vendor=${vendorId}&minprice=${minprice}&maxprice=${maxprice}`;
+    // http://localhost:8000/menu?canteenId=1&vendorId=3&minprice&maxprice=
+    const path = `${appConfig.BACKEND_API_URL}/menu?canteenId=${canteenId}&vendorId=${vendorId}&minprice=${minprice}&maxprice=${maxprice}`;
     // console.log('path',path)
     const axios_res = await axios.get(path, { headers });
     // const axios_res = await axios.get(path);
@@ -20,10 +21,10 @@ const MenuService = {
   },
 
   getAllMenusByVendorId: async (vendorId: bigint) => {
-    // const headers = getEmptyHeaderWithBearerToken();
+    const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/menu/byVendor/${vendorId}`;
-    // const axios_res = await axios.get(path, { headers });
-    const axios_res = await axios.get(path);
+    const axios_res = await axios.get(path, { headers });
+    // const axios_res = await axios.get(path);
     const res = axios_res.data as ApiResponse<Menu[]>;
     if(!isResponseOk(res)) {
       throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
@@ -32,10 +33,10 @@ const MenuService = {
   },
 
   getMenuById: async (id: bigint) => {
-    // const headers = getEmptyHeaderWithBearerToken();
+    const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/menu/${id}`;
-    // const axios_res = await axios.get(path, { headers });
-    const axios_res = await axios.get(path);
+    const axios_res = await axios.get(path, { headers });
+    // const axios_res = await axios.get(path);
     const res = axios_res.data as ApiResponse<Menu>;
     if(!isResponseOk(res)) {
       throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
@@ -44,10 +45,10 @@ const MenuService = {
   },
 
   createMenu: async (menuRequest: Menu) => {
-    // const headers = getEmptyHeaderWithBearerToken();
+    const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/menu`;
-    // const axios_res = await axios.post(path, { headers });
-    const axios_res = await axios.post(path, menuRequest);
+    const axios_res = await axios.post(path, { headers });
+    // const axios_res = await axios.post(path, menuRequest);
     const res = axios_res.data as ApiResponse<Menu>;
     if(!isResponseOk(res)) {
       throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
@@ -56,10 +57,10 @@ const MenuService = {
   },
 
   deleteMenuById: async (id: bigint) => {
-      // const headers = getEmptyHeaderWithBearerToken();
+      const headers = getEmptyHeaderWithBearerToken();
       const path = `${appConfig.BACKEND_API_URL}/menu/${id}`;
-      // const axios_res = await axios.post(path, { headers });
-      const axios_res = await axios.delete(path);
+      const axios_res = await axios.delete(path, { headers });
+      // const axios_res = await axios.delete(path);
       const res = axios_res.data as ApiResponse<Menu>;
       if(!isResponseOk(res)) {
         throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
@@ -68,10 +69,10 @@ const MenuService = {
   },
 
   updateMenuById: async (id: bigint, updatedMenu: Menu) => {
-    // const headers = getEmptyHeaderWithBearerToken();
+    const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/menu/${id}`;
-    // const axios_res = await axios.post(path, { headers });
-    const axios_res = await axios.put(path,updatedMenu);
+    const axios_res = await axios.put(path, { headers });
+    // const axios_res = await axios.put(path,updatedMenu);
     const res = axios_res.data as ApiResponse<Menu>;
     if(!isResponseOk(res)) {
       throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
