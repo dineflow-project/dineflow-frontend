@@ -1,8 +1,12 @@
+import { Menu } from "./MenuInterface";
+
 export interface OrderMenu {
     menu_id: string;
     amount: number;
     price: number;
     request?: string | null;
+    menu_details?: Menu; // Add this property
+
   }
   
   export interface Order {
@@ -16,3 +20,4 @@ export interface OrderMenu {
     updated_at?: string;
   }
   
+

@@ -12,19 +12,26 @@ import Swal from "sweetalert2";
 import { useAuth } from "./auth/AuthProvider";
 import { useRouter } from "next/navigation";
 // import { useUser } from "@/hooks/useUser";
-const navigation = [
-  { name: "All Canteens", href: "/", current: true },
-  { name: "Order History", href: "/orders", current: false },
-];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-
+const navigation = [
+  { name: "All Canteens", href: "/" },
+  {
+    name: "Order History",
+    href: "/orders",
+  },
+  {
+    name: "Notification",
+    href: "/noti",
+  },
+];
 const TopMenu = () => {
+  const router = useRouter();
+
   // const { isLoggedIn } = useAuth();
   const { isAuthenticated, user, loading } = useAuth();
-  const router = useRouter();
   // You can use isAuthenticated, user, and loading in your component logic
   // console.log(
   //   "TopMenu component rendering with authentication state:",
@@ -32,6 +39,23 @@ const TopMenu = () => {
   //   user,
   //   loading
   // );
+  // Declare userId and role as state variables
+  // console.log("log user of authen", user);
+  // console.log("isAuthen", isAuthenticated);
+  // const [userId, setUserId] = useState<string | null>(null);
+  // const [role, setRole] = useState<string | null>(null);
+
+  // useEffect(() => {
+  //   // Check if window is defined to ensure we are on the client side
+  //   if (typeof window !== "undefined") {
+  //     const storedUserId = sessionStorage.getItem("userId");
+  //     const storedRole = sessionStorage.getItem("role");
+
+  //     // Update state variables with sessionStorage values
+  //     setUserId(storedUserId);
+  //     setRole(storedRole);
+  //   }
+  // }, [sessionStorage]);
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("userId");
   // console.log("userId from sessionStorage ", user?.id, " role ", user?.role);
@@ -39,6 +63,9 @@ const TopMenu = () => {
 
   const logout = () => {
     sessionStorage.clear();
+    // console.log("userId", userId);
+    // setUserId(null);
+    // setRole(null);
     console.log("logout", sessionStorage);
     Swal.fire({
       icon: "success",
@@ -75,13 +102,7 @@ const TopMenu = () => {
                       <a
                         key={item.name}
                         href={item.href}
-                        className={classNames(
-                          item.current
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                          "rounded-md px-3 py-2 text-sm font-medium"
-                        )}
-                        aria-current={item.current ? "page" : undefined}
+                        className="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium"
                       >
                         {item.name}
                       </a>
@@ -91,14 +112,14 @@ const TopMenu = () => {
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                 {/* </button> */}
-                <button
+                {/* <button
                   type="button"
                   className="relative rounded-full ml-3 bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                 >
                   <span className="absolute -inset-1.5" />
                   <span className="sr-only">View notifications</span>
                   <BellIcon className="h-6 w-6" aria-hidden="true" />
-                </button>
+                </button> */}
 
                 {/* Profile dropdown */}
                 {userId ? (
@@ -173,13 +194,7 @@ const TopMenu = () => {
                   key={item.name}
                   as="a"
                   href={item.href}
-                  className={classNames(
-                    item.current
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                    "block rounded-md px-3 py-2 text-base font-medium"
-                  )}
-                  aria-current={item.current ? "page" : undefined}
+                  className="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium"
                 >
                   {item.name}
                 </Disclosure.Button>

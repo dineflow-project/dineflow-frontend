@@ -35,6 +35,7 @@ export default function VendorPage({
   const [maxFilterPrice, setMaxFilterPrice] = useState<number | null>(null);
   console.log("in the page order", sessionStorage);
   const router = useRouter();
+  const accessToken = sessionStorage.getItem("accessToken");
   // console.log("order session storage", sessionStorage);
   const role = sessionStorage.getItem("role");
   const userId = sessionStorage.getItem("userId");
@@ -67,6 +68,7 @@ export default function VendorPage({
   };
 
   const handlePriceFilter = (min: number | null, max: number | null) => {
+    console.log("filter", min, max);
     setMinFilterPrice(min);
     setMaxFilterPrice(max);
   };
@@ -101,8 +103,8 @@ export default function VendorPage({
       MenuService.getAllMenus(
         vendor.canteen_id,
         params.vendorId,
-        minFilterPrice,
-        maxFilterPrice
+        minFilterPrice || 0,
+        maxFilterPrice || 9999999
       )
         .then((menuRes) => {
           if (!menuRes.data) return;
@@ -117,6 +119,12 @@ export default function VendorPage({
   }, [vendor, params.vendorId, minFilterPrice, maxFilterPrice]);
 
   const handleCheckout = () => {
+    if (accessToken == null) {
+      Swal.fire("Error", "Please sign in before order", "error");
+      router.push("/signin");
+      // clearInterval(interval);
+      return;
+    }
     // Check if there's an error before proceeding with checkout
     const hasErrors = Object.values(quantityErrors).some(
       (error) => error !== null
@@ -129,8 +137,10 @@ export default function VendorPage({
 
     // Get the selected menus and their quantities
     const selectedMenus: OrderMenu[] = menus
-      .filter((menu) => menu.is_available)
+      .filter((menu) => menu.is_available == "yes")
       .map((menu) => {
+        // console.log(`Element with id 'quantity-${menu.id}'`);
+
         const quantity = parseInt(
           (document.getElementById(`quantity-${menu.id}`) as HTMLInputElement)
             .value
@@ -196,7 +206,7 @@ export default function VendorPage({
               });
               // Clear all quantity inputs
               menus
-                .filter((menu) => menu.is_available)
+                .filter((menu) => menu.is_available === "yes")
                 .forEach((menu) => {
                   const quantityInput = document.getElementById(
                     `quantity-${menu.id}`
@@ -257,20 +267,16 @@ export default function VendorPage({
       <h2 className="text-2xl font-bold">Menu List</h2>
 
       {/* filter */}
-      <PriceFilter
-        minNumber={minFilterPrice}
-        maxNumber={maxFilterPrice}
-        onFilter={handlePriceFilter}
-      />
+      <PriceFilter onFilter={handlePriceFilter} />
       <div className="bg-slate-50 p-5 rounded-lg">
-        {menus.filter((menu) => menu.is_available).length === 0 ? (
+        {menus.filter((menu) => menu.is_available === "yes").length === 0 ? (
           <p className="text-red-500 font-semibold p-10 m-10">
             Sorry, we're running out of food.
           </p>
         ) : (
           <div className="p-2 flex-wrap">
             {menus
-              .filter((menu) => menu.is_available)
+              .filter((menu) => menu.is_available === "yes")
               .map((menu) => (
                 <div
                   key={menu.id}
