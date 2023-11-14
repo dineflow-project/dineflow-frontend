@@ -37,7 +37,6 @@ const navigationVendor: NavigationItem[] = [
 const navigationNotLogin: NavigationItem[] = [
   { name: "All Canteens", href: "/" },
 ];
-
 const TopMenu = () => {
   const router = useRouter();
 
@@ -45,7 +44,6 @@ const TopMenu = () => {
   const { isAuthenticated, user, loading } = useAuth();
   // const [userId, setUserId] = useState<string | null>(sessionStorage.getItem("userId"));
   // const [role, setRole] = useState<string | null>(sessionStorage.getItem("role"));
-
   // You can use isAuthenticated, user, and loading in your component logic
   // console.log(
   //   "TopMenu component rendering with authentication state:",
@@ -90,7 +88,6 @@ const TopMenu = () => {
     sessionStorage.clear();
     console.log("check");
     router.push("/");
-
     Swal.fire({
       icon: "success",
       title: "Logout Success",

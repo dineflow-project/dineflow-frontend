@@ -38,7 +38,7 @@ const VendorService = {
   }
     return res;
   },
-
+  
   getMyVendor: async () => {
     const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/vendor/byOwner/${sessionStorage.getItem("userId")}`;
