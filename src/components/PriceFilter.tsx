@@ -46,6 +46,9 @@ export default function PriceFilter({
     if (min !== null || max !== null) {
       onFilter(min, max);
     }
+    if (min === null && max === null) {
+      onFilter(0, 99999999);
+    }
   };
   return (
     <div className="bg-gray-100 p-4 rounded-lg shadow mb-4">

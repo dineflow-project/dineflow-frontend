@@ -1,4 +1,4 @@
-import { UserInterface } from "./UserInterface";
+import { UserInterface } from "../Interfaces/UserInterface";
 
 export interface ApiResponse<T = any> {
     code: string;
