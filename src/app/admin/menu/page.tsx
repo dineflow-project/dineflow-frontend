@@ -1,11 +1,11 @@
 "use client";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Menu } from '@/app/Interfaces/MenuInterface';
 import { Switch } from '@headlessui/react';
 import Image from 'next/image';
+import { Menu } from '@/Interfaces/MenuInterface';
 
-export default function Vendor() {
+export default function Menu() {
     const [user, setUser] = useState<any>();
     const [vendor, setVendor] = useState<any>();
     const [menus, setMenus] = useState<Menu[]>([]);
@@ -84,7 +84,7 @@ export default function Vendor() {
                     const newMenus = [...prevMenus];
                     newMenus[index] = {
                         ...newMenus[index],
-                        is_available: !menu.is_available,
+                        is_available: menu.is_available == "yes" ? "no" : "yes",
                     };
                     return newMenus;
                 });
@@ -120,7 +120,7 @@ export default function Vendor() {
                 console.log(err);
             });
         } else {
-            axios.post('http://localhost:8000/menu', { ...menu, id: undefined, vendor_id: 1, is_available: false}, {
+            axios.post('http://localhost:8000/menu', { ...menu, id: undefined, vendor_id: vendor.id, is_available: "no"}, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
                 },
@@ -205,7 +205,7 @@ export default function Vendor() {
                                                         <td className="border border-gray-400 px-4 py-2">${menu.price.toFixed(2)}</td>
                                                         <td className="border border-gray-400 px-4 py-2 text-center">
                                                                 <Switch
-                                                                        checked={menu.is_available}
+                                                                        checked={menu.is_available == "yes"}
                                                                         onChange={() => handleSetAvailable(menu)}
                                                                         className={`${menu.is_available ? 'bg-gray-800' : 'bg-gray-300'}
                                                                                 relative inline-flex items-center h-6 rounded-full w-11`}

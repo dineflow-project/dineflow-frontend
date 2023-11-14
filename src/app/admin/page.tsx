@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, use } from 'react';
 import axios from 'axios';
-import { Vendor } from '../Interfaces/VendorInterface';
 import Image from 'next/image';
+import { Vendor } from '@/Interfaces/VendorInterface';
 
 interface Canteen {
   id: bigint;
@@ -134,16 +134,18 @@ export default function Vendor() {
           </div>
         </div>
         <hr className='border-gray-300' />
-        <h1 className="text-xl font-bold pl-8">Reviews</h1>
+        <div className="flex flex-row px-10 py-2">
+          <h1 className="text-2xl font-bold px-6">Reviews</h1>
+          <p className='text-base pt-1 pl-2'>Average Rating: {avgRating.toFixed(1)}/5.0</p>
+        </div>
         <hr className='border-gray-300' />
-        <p>Average Rating: {avgRating}</p>
-        <div className="space-y-2 pl-4">
+        <div className="space-y-2 px-16">
           {!reviews || reviews.length === 0 ? 
-          (<p>No reviews yet</p>) : (
+          (<p className='pl-12'>No reviews yet</p>) : (
           reviews.map((review) => (
-            <div className="border p-2">
-              <p>{review.score}</p>
-              <p>{review.content}</p>
+            <div className="border p-4 space-y-1">
+              <p>{review.score}/5</p>
+              <p>{review.description}</p>
             </div>
           )))}
         </div>
