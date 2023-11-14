@@ -29,7 +29,7 @@ export default function VendorPage({
   const [menus, setMenus] = useState<Menu[]>([]);
   const [score, setScore] = useState<number | undefined>(undefined); // Changed to allow for null
   const [quantityErrors, setQuantityErrors] = useState<
-    Record<number, string | null>
+    Record<string, string | null>
   >({});
   const [minFilterPrice, setMinFilterPrice] = useState<number | null>(null);
   const [maxFilterPrice, setMaxFilterPrice] = useState<number | null>(null);
@@ -42,7 +42,7 @@ export default function VendorPage({
   // console.log("roleeeeee", role);
 
   const handleQuantityInput = (
-    menuId: number,
+    menuId: string,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const inputValue = event.target.value;
@@ -54,13 +54,13 @@ export default function VendorPage({
       parseInt(inputValue) < 0
     ) {
       // Set the error message for the specific menu
-      setQuantityErrors((prevErrors) => ({
+      setQuantityErrors((prevErrors: any) => ({
         ...prevErrors,
         [menuId]: "Please enter a valid positive integer.",
       }));
     } else {
       // Clear the error message if the input is valid
-      setQuantityErrors((prevErrors) => ({
+      setQuantityErrors((prevErrors: any) => ({
         ...prevErrors,
         [menuId]: null,
       }));
@@ -137,8 +137,8 @@ export default function VendorPage({
 
     // Get the selected menus and their quantities
     const selectedMenus: OrderMenu[] = menus
-      .filter((menu) => menu.is_available == "yes")
-      .map((menu) => {
+      .filter((menu: any) => menu.is_available == "yes")
+      .map((menu: any) => {
         // console.log(`Element with id 'quantity-${menu.id}'`);
 
         const quantity = parseInt(
@@ -151,7 +151,7 @@ export default function VendorPage({
           amount: quantity,
         };
       })
-      .filter((menu) => menu.amount > 0); // Exclude menus with quantity 0
+      .filter((menu: any) => menu.amount > 0); // Exclude menus with quantity 0
 
     // Check if there are any selected menus
     if (selectedMenus.length === 0) {
@@ -177,7 +177,7 @@ export default function VendorPage({
       showCancelButton: true,
       confirmButtonText: "Place Order",
       cancelButtonText: "Cancel",
-    }).then((result) => {
+    }).then((result: any) => {
       if (result.isConfirmed) {
         if (userId) {
           // Prepare the data to be sent to the backend
@@ -206,8 +206,8 @@ export default function VendorPage({
               });
               // Clear all quantity inputs
               menus
-                .filter((menu) => menu.is_available === "yes")
-                .forEach((menu) => {
+                .filter((menu: any) => menu.is_available === "yes")
+                .forEach((menu: any) => {
                   const quantityInput = document.getElementById(
                     `quantity-${menu.id}`
                   ) as HTMLInputElement;
@@ -308,12 +308,12 @@ export default function VendorPage({
                         id={`quantity-${menu.id}`}
                         min="0"
                         defaultValue={0}
-                        onChange={(e) => handleQuantityInput(menu.id, e)}
+                        onChange={(e) => handleQuantityInput(menu.id.toString(), e)}
                         className="w-16 h-10 border border-gray-300 rounded-md px-2 ml-2"
                       />
-                      {quantityErrors[menu.id] && (
+                      {quantityErrors[menu.id.toString()] && (
                         <p className="text-red-500 text-sm mt-2">
-                          {quantityErrors[menu.id]}
+                          {quantityErrors[menu.id.toString()]}
                         </p>
                       )}
                     </div>
