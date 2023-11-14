@@ -47,9 +47,15 @@ export default function Signin() {
       text: "Login success",
     });
     // setIsLoggedIn(true);
+    const role = sessionStorage.getItem("role");
     router.refresh();
-    router.push("/");
-
+    console.log("Role after signin", role);
+    if (role === "user") {
+      router.push("/");
+    }
+    if (role === "vendor") {
+      router.push("/admin");
+    }
     // window.location.reload();
   };
 
