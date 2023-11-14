@@ -1,153 +1,111 @@
 "use client";
 import { Menu } from "@/Interfaces/MenuInterface";
 import { Order } from "@/Interfaces/OrderInterface";
+import MenuService from "@/services/MenuService";
+import OrderService from "@/services/OrderService";
+import VendorService from "@/services/VendorService";
 import axios from "axios";
 import { useState, useEffect } from "react";
 
 export default function Order() {
     const [activeTab, setActiveTab] = useState("waiting");
-    const [user, setUser] = useState<any>();
     const [vendor, setVendor] = useState<any>();
     const [orders, setOrders] = useState<Order[]>([]);
     const [menus, setMenus] = useState<Menu[]>([]);
     const [showOrder, setShowOrder] = useState<Map<string, boolean>>(new Map());
 
     useEffect(() => {
-        axios.post('http://localhost:8000/api/auth/login', {
-            email: 'vendor1@gmail.com',
-            password: 'password123',
-        })
+        VendorService.getMyVendor()
             .then((res) => {
-                console.log(res.data);
-                localStorage.setItem('token', res.data.token);
+                setVendor(res.data);
             })
             .catch((err) => {
                 console.log(err);
             });
-    }, []);
-
-    useEffect(() => {
-        axios.get('http://localhost:8000/api/users/me', {
-            headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token'),
-            },
-        })
-            .then((res) => {
-                setUser(res.data.data);
-                console.log(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
-    useEffect(() => {
-        if (!user) {
-            return;
-        }
-        axios.get('http://localhost:8000/vendor/byOwner/' + user?.id, {
-            headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token'),
-            },
-        })
-            .then((res) => {
-                setVendor(res.data.data);
-                console.log(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, [user]);
-
-    useEffect(() => {
-        axios.get('http://localhost:8000/order/byVendor/' + vendor?.id, {
-            headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token'),
-            },
-        })
-            .then((res) => {
-                setOrders(res.data.data);
-                setOrders([
-                    {
-                        id: 'aaaaaa',
-                        status: "waiting",
-                        order_menus: [
-                            {
-                                menu_id: menus[0].id,
-                                amount: 1,
-                                price: 1,
-                            },
-                            {
-                                menu_id: menus[1].id,
-                                amount: 2,
-                                price: 1,
-                            },
-                        ],
-                    },
-                    {
-                        id: 'abababa',
-                        status: "waiting",
-                        order_menus: [
-                            {
-                                menu_id: menus[0].id,
-                                amount: 1,
-                                price: 1,
-                            },
-                            {
-                                menu_id: menus[1].id,
-                                amount: 2,
-                                price: 1,
-                            },
-                        ],
-                    },
-                    {
-                        id: 'bbbbbb',
-                        status: "cooking",
-                        order_menus: [
-                            {
-                                menu_id: menus[0].id,
-                                amount: 1,
-                                price: 1,
-                            },
-                            {
-                                menu_id: menus[1].id,
-                                amount: 3,
-                                price: 1,
-                            },
-                        ],
-                    },
-                    {
-                        id: 'cccccc',
-                        status: "finished",
-                        order_menus: [
-                            {
-                                menu_id: menus[0].id,
-                                amount: 1,
-                                price: 1,
-                            },
-                            {
-                                menu_id: menus[1].id,
-                                amount: 4,
-                                price: 1,
-                            },
-                        ],
-                    },
-                ])
-                console.log(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, [vendor, menus]);
-
+        }, []);
+        
     useEffect(() => {
         if (!vendor) {
             return;
         }
-        axios.get('http://localhost:8000/menu/byVendor/' + vendor?.id)
+        MenuService.getAllMenusByVendorId(vendor.id)
             .then((res) => {
-                setMenus(res.data.data);
-                console.log(res.data.data);
+                setMenus(res.data ? res.data : []);
+                console.log(res.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        OrderService.getOrdersByVendorId(vendor.id)
+            .then((res) => {
+                setOrders(res.data ? res.data : []);
+                // setOrders([
+                //     {
+                //         id: 'aaaaaa',
+                //         status: "waiting",
+                //         order_menus: [
+                //             {
+                //                 menu_id: menus[0].id,
+                //                 amount: 1,
+                //                 price: 1,
+                //             },
+                //             {
+                //                 menu_id: menus[1].id,
+                //                 amount: 2,
+                //                 price: 1,
+                //             },
+                //         ],
+                //     },
+                //     {
+                //         id: 'abababa',
+                //         status: "waiting",
+                //         order_menus: [
+                //             {
+                //                 menu_id: menus[0].id,
+                //                 amount: 1,
+                //                 price: 1,
+                //             },
+                //             {
+                //                 menu_id: menus[1].id,
+                //                 amount: 2,
+                //                 price: 1,
+                //             },
+                //         ],
+                //     },
+                //     {
+                //         id: 'bbbbbb',
+                //         status: "cooking",
+                //         order_menus: [
+                //             {
+                //                 menu_id: menus[0].id,
+                //                 amount: 1,
+                //                 price: 1,
+                //             },
+                //             {
+                //                 menu_id: menus[1].id,
+                //                 amount: 3,
+                //                 price: 1,
+                //             },
+                //         ],
+                //     },
+                //     {
+                //         id: 'cccccc',
+                //         status: "finished",
+                //         order_menus: [
+                //             {
+                //                 menu_id: menus[0].id,
+                //                 amount: 1,
+                //                 price: 1,
+                //             },
+                //             {
+                //                 menu_id: menus[1].id,
+                //                 amount: 4,
+                //                 price: 1,
+                //             },
+                //         ],
+                //     },
+                // ])
+                // console.log(res.data);
             })
             .catch((err) => {
                 console.log(err);
@@ -193,7 +151,7 @@ export default function Order() {
             </div>
             <div>
                 <hr className="border-gray-400"/>
-                {orders == null || orders.length === 0 ? <p>No orders</p>:
+                {orders == null || orders.length === 0 ? <p className="px-8 py-4">No orders</p>:
                 orders.length !== 0 && orders
                     .filter((order) => order.status === activeTab)
                     .map((order) => (

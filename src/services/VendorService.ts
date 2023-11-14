@@ -2,7 +2,7 @@ import axios, { AxiosError } from 'axios';
 import appConfig from "../configs/config";
 import { Vendor } from '../Interfaces/VendorInterface';
 import { ApiErrorResponse, ApiResponse } from '@/Interfaces/ApiResponseInterface';
-import { isResponseOk } from '@/utils/AppUtils';
+import { getEmptyHeaderWithBearerToken, isResponseOk } from '@/utils/AppUtils';
 
 const VendorService = {
   getAllVendors: async () => {
@@ -33,6 +33,17 @@ const VendorService = {
     // const axios_res = await axios.get(path, { headers });
     const axios_res = await axios.get(path);
     const res = axios_res.data as ApiResponse<Vendor[]>;
+    if(!isResponseOk(res)) {
+      throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
+  }
+    return res;
+  },
+
+  getMyVendor: async () => {
+    const headers = getEmptyHeaderWithBearerToken();
+    const path = `${appConfig.BACKEND_API_URL}/vendor/byOwner/${sessionStorage.getItem("userId")}`;
+    const axios_res = await axios.get(path, { headers });
+    const res = axios_res.data as ApiResponse<Vendor>;
     if(!isResponseOk(res)) {
       throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
   }

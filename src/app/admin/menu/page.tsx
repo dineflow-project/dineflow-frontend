@@ -4,23 +4,21 @@ import axios from 'axios';
 import { Switch } from '@headlessui/react';
 import Image from 'next/image';
 import { Menu } from '@/Interfaces/MenuInterface';
+import VendorService from '@/services/VendorService';
+import MenuService from '@/services/MenuService';
+import { Vendor } from '@/Interfaces/VendorInterface';
 
 export default function Menu() {
-    const [user, setUser] = useState<any>();
-    const [vendor, setVendor] = useState<any>();
+    const [vendor, setVendor] = useState<Vendor>();
     const [menus, setMenus] = useState<Menu[]>([]);
     const [editingMenu, setEditingMenu] = useState<Menu | null>(null);
     const [isNewMenu, setIsNewMenu] = useState<boolean>(true);
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
-        axios.post('http://localhost:8000/api/auth/login', {
-            email: 'vendor1@gmail.com',
-            password: 'password123',
-        })
+        VendorService.getMyVendor()
             .then((res) => {
-                console.log(res.data);
-                localStorage.setItem('token', res.data.token);
+                setVendor(res.data);
             })
             .catch((err) => {
                 console.log(err);
@@ -28,40 +26,12 @@ export default function Menu() {
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/api/users/me', {
-            headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token'),
-            },
-        })
+        if (!vendor) {
+            return;
+        }
+        MenuService.getAllMenusByVendorId(vendor?.id)
             .then((res) => {
-                setUser(res.data.data);
-                console.log(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
-    useEffect(() => {
-        axios.get('http://localhost:8000/vendor/byOwner/' + user?.id)
-            .then((res) => {
-                setVendor(res.data.data);
-                console.log(res.data.data);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, [user]);
-
-    useEffect(() => {
-        axios.get('http://localhost:8000/menu/byVendor/' + vendor?.id, {
-                headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem('token'),
-                },
-            })
-            .then((res) => {
-                setMenus(res.data.data);
-                console.log(res.data.data[0]);
+                setMenus(res.data ? res.data : []);
             })
             .catch((err) => {
                 console.log(err);
@@ -70,21 +40,16 @@ export default function Menu() {
 
     const handleSetAvailable = (menu: Menu) => {
         console.log(menu.id);
-        axios.put(`http://localhost:8000/menu/${menu.id}`, {
-                is_available: !menu.is_available,
-            }, {
-                headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem('token'),
-                },
-            })
+        menu.is_available = menu.is_available == "yes" ? "no" : "yes";
+        MenuService.updateMenuById(menu.id, menu)
             .then((res) => {
-                console.log(res.data);
+                console.log(res);
                 setMenus((prevMenus) => {
                     const index = prevMenus.findIndex((m) => m.id === menu.id);
                     const newMenus = [...prevMenus];
                     newMenus[index] = {
                         ...newMenus[index],
-                        is_available: menu.is_available == "yes" ? "no" : "yes",
+                        is_available: menu.is_available,
                     };
                     return newMenus;
                 });
@@ -102,11 +67,7 @@ export default function Menu() {
 
     const handleSaveMenu = (menu: Menu) => {
         if(!isNewMenu) {
-            axios.put(`http://localhost:8000/menu/${menu.id}`, menu, {
-                headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem('token'),
-                },
-            })
+            MenuService.updateMenuById(menu.id, menu)
             .then((res) => {
                 console.log(res.data);
                 setMenus((prevMenus) => {
@@ -120,14 +81,11 @@ export default function Menu() {
                 console.log(err);
             });
         } else {
-            axios.post('http://localhost:8000/menu', { ...menu, id: undefined, vendor_id: vendor.id, is_available: "no"}, {
-                headers: {
-                    Authorization: 'Bearer ' + localStorage.getItem('token'),
-                },
-            })
+            menu.vendor_id = vendor!.id;
+            MenuService.createMenu(menu)
             .then((res) => {
                 console.log(res.data);
-                setMenus((prevMenus) => [...prevMenus, res.data.data]);
+                setMenus((prevMenus) => [...prevMenus, res.data!]);
             })
             .catch((err) => {
                 console.log(err);
@@ -139,13 +97,8 @@ export default function Menu() {
     }
 
     const handleDeleteMenu = (menu: Menu) => {
-        axios.delete(`http://localhost:8000/menu/${menu.id}`, {
-            headers: {
-                Authorization: 'Bearer ' + localStorage.getItem('token'),
-            },
-        })
+        MenuService.deleteMenuById(menu.id)
         .then((res) => {
-            console.log(res.data);
             setMenus((prevMenus) => {
                 const index = prevMenus.findIndex((m) => m.id === menu.id);
                 const newMenus = [...prevMenus];
@@ -207,12 +160,12 @@ export default function Menu() {
                                                                 <Switch
                                                                         checked={menu.is_available == "yes"}
                                                                         onChange={() => handleSetAvailable(menu)}
-                                                                        className={`${menu.is_available ? 'bg-gray-800' : 'bg-gray-300'}
+                                                                        className={`${menu.is_available == "yes" ? 'bg-gray-800' : 'bg-gray-300'}
                                                                                 relative inline-flex items-center h-6 rounded-full w-11`}
                                                                 >
                                                                         <span className="sr-only">Toggle</span>
                                                                         <span
-                                                                                className={`${menu.is_available ? 'translate-x-6' : 'translate-x-1'}
+                                                                                className={`${menu.is_available == "yes" ? 'translate-x-6' : 'translate-x-1'}
                                                                                         inline-block w-4 h-4 transform bg-white rounded-full`}
                                                                         />
                                                                 </Switch>

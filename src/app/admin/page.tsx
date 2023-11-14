@@ -3,102 +3,49 @@ import { useState, useEffect, use } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import { Vendor } from '@/Interfaces/VendorInterface';
-
-interface Canteen {
-  id: bigint;
-  name: string;
-}
+import VendorService from '@/services/VendorService';
+import { Canteen } from '@/Interfaces/CanteenInterface';
+import { getCanteenByID } from '@/services/CanteenService';
+import ReviewService from '@/services/ReviewService';
 
 export default function Vendor() {
-  const [user, setUser] = useState<any>();
   const [vendor, setVendor] = useState<Vendor>();
   const [canteen, setCanteen] = useState<Canteen>();
   const [avgRating, setAvgRating] = useState<number>(0);
   const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
-    axios.post('http://localhost:8000/api/auth/login', {
-      email: 'vendor1@gmail.com',
-      password: 'password123',
-    })
-      .then((res) => {
-        // console.log(res.data);
-        localStorage.setItem('token', res.data.token);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    VendorService.getMyVendor()
+        .then((res) => {
+            setVendor(res.data);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
   }, []);
-
-  useEffect(() => {
-    axios.get('http://localhost:8000/api/users/me', {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-    })
-      .then((res) => {
-        setUser(res.data.data);
-        console.log(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-    axios.get('http://localhost:8000/vendor/byOwner/' + user?.id, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-    })
-      .then((res) => {
-        setVendor(res.data.data);
-        // console.log(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [user]);
 
   useEffect(() => {
     if (!vendor) {
       return;
     }
-    axios.get('http://localhost:8000/canteen/' + vendor.canteen_id, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-    })
+    getCanteenByID(vendor.canteen_id)
       .then((res) => {
-        setCanteen(res.data.data);
+        setCanteen(res.data);
         // console.log(res.data.data);
       })
       .catch((err) => {
         console.log(err);
       });
-    axios.get('http://localhost:8000/review/byVendor/' + vendor.id, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-    })
+    ReviewService.getReviewByVendorId(vendor.id.toString())
       .then((res) => {
-        setReviews(res.data.data);
-        console.log(res.data.data);
+        setReviews(res.data ? res.data : []);
       })
       .catch((err) => {
         console.log(err);
       });
-    axios.get('http://localhost:8000/review/avgScore/' + vendor.id, {
-      headers: {
-        Authorization: 'Bearer ' + localStorage.getItem('token'),
-      },
-    })
+    ReviewService.getAvgReviewScoreByVendorId(vendor.id.toString())
       .then((res) => {
-        setAvgRating(res.data.data);
-        console.log("avgScore", res.data.data);
+        setAvgRating(res.data ? res.data : 0);
       })
       .catch((err) => {
         console.log(err);
