@@ -41,9 +41,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let interval: string | number | NodeJS.Timeout | undefined;
     const accessToken = sessionStorage.getItem("accessToken");
     if (accessToken == null) {
-      router.push("/signin");
+      // router.push("/signin");
       clearInterval(interval);
-      Swal.fire("Error", "Please log in", "error");
+      // Swal.fire("Error", "Please log in", "error");
       return;
     } else {
       setUser({ id: "test" } as UserInterface);
