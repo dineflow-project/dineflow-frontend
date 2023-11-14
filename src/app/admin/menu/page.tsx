@@ -7,6 +7,7 @@ import Image from 'next/image';
 
 export default function Vendor() {
     const [user, setUser] = useState<any>();
+    const [vendor, setVendor] = useState<any>();
     const [menus, setMenus] = useState<Menu[]>([]);
     const [editingMenu, setEditingMenu] = useState<Menu | null>(null);
     const [isNewMenu, setIsNewMenu] = useState<boolean>(true);
@@ -42,7 +43,18 @@ export default function Vendor() {
     }, []);
 
     useEffect(() => {
-        axios.get('http://localhost:8000/menu/byVendor/1', {
+        axios.get('http://localhost:8000/vendor/byOwner/' + user?.id)
+            .then((res) => {
+                setVendor(res.data.data);
+                console.log(res.data.data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }, [user]);
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/menu/byVendor/' + vendor?.id, {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('token'),
                 },
@@ -54,7 +66,7 @@ export default function Vendor() {
             .catch((err) => {
                 console.log(err);
             });
-    }, [showModal]);
+    }, [vendor]);
 
     const handleSetAvailable = (menu: Menu) => {
         console.log(menu.id);
@@ -115,6 +127,7 @@ export default function Vendor() {
             })
             .then((res) => {
                 console.log(res.data);
+                setMenus((prevMenus) => [...prevMenus, res.data.data]);
             })
             .catch((err) => {
                 console.log(err);
@@ -163,6 +176,7 @@ export default function Vendor() {
                                     Add Menu
                                 </button>
                         </div>
+                        {!menus || menus.length === 0 ? <p>Loading menu...</p> :
                         <table className="min-w-min max-w-5xl w-full border-collapse">
                                 <thead>
                                         <tr>
@@ -211,7 +225,7 @@ export default function Vendor() {
                                                 </tr>
                                         ))}
                                 </tbody>
-                        </table>
+                        </table>}
                 </div>
                 {showModal && (
                     <div className="fixed z-10 inset-0 overflow-y-auto">
