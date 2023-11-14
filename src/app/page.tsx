@@ -1,69 +1,57 @@
+"use client";
 import Image from "next/image";
-
-const products = [
-  {
-    id: 1,
-    vendor_id: 1,
-    name: "Basic Tea",
-    price: "$35",
-    href: "#",
-    image_path:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    description: "Honey",
-    is_available: true,
-  },
-  {
-    id: 2,
-    vendor_id: 1,
-    name: "Hot Chocolate",
-    price: "$5",
-    href: "#",
-    image_path:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg",
-    description: "Chocolate from Belgium",
-    is_available: true,
-  },
-];
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { getAllCanteens } from "../services/CanteenService";
+import { Canteen } from "@/Interfaces/CanteenInterface";
+import Swal from "sweetalert2";
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div>Hello</div>
-      <div className="bg-white">
-        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Customers also purchased
-          </h2>
+  const [canteens, setCanteens] = useState<Canteen[]>([]);
 
-          <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {products.map((product) => (
-              <div key={product.id} className="group relative">
-                <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
-                  <img
-                    src={product.image_path}
-                    className="h-full w-full object-cover object-center lg:h-full lg:w-full"
-                  />
-                </div>
-                <div className="mt-4 flex justify-between">
-                  <div>
-                    <h3 className="text-sm text-gray-700">
-                      <a href={product.href}>
-                        <span aria-hidden="true" className="absolute inset-0" />
-                        {product.name}
-                      </a>
-                    </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {product.description}
-                    </p>
-                  </div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {product.price}
-                  </p>
-                </div>
+  useEffect(() => {
+    // Fetch canteens when the component mounts
+    const fetchCanteens = async () => {
+      try {
+        const canteensRes = await getAllCanteens();
+        if (!canteensRes.data) return;
+        setCanteens(canteensRes.data);
+        console.log("canteen data", canteensRes.data);
+      } catch (error) {
+        // console.error("Error fetching canteens:", error);
+        // Swal.fire("Error", "Cannot get canteens", "error");
+      }
+    };
+
+    fetchCanteens();
+  }, []);
+
+  return (
+    <main className="container mx-auto p-16">
+      <div className="text-center mb-4">
+        <h1 className="text-3xl font-bold">Canteen List</h1>
+      </div>
+
+      <div className="flex flex-wrap m-4 ">
+        {canteens.map((canteen) => (
+          <div
+            key={canteen.id}
+            className="w-full sm:w-1/2 md:w-1/3 lg:w-1/3 p-4 lg:p-8"
+          >
+            <Link href={`/canteen/${canteen.id}`}>
+              <div className="border border-gray-200 hover:border-cyan-200  rounded-md hover:bg-cyan-50 transition duration-300 ease-in-out">
+                <p className="text-lg font-semibold text-center mt-2">
+                  {canteen.name}
+                </p>
+                <img
+                  src={canteen.image_path} // Assuming there's an image_url property in your canteen object
+                  alt={`Image for ${canteen.name}`}
+                  className="mt-4 rounded-md w-full h-60 object-cover"
+                />
               </div>
-            ))}
+            </Link>
           </div>
-        </div>
+        ))}
       </div>
     </main>
   );
