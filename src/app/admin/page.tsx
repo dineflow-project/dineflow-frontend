@@ -7,6 +7,7 @@ import VendorService from '@/services/VendorService';
 import { Canteen } from '@/Interfaces/CanteenInterface';
 import { getAllCanteens, getCanteenByID } from '@/services/CanteenService';
 import ReviewService from '@/services/ReviewService';
+import { useRouter } from 'next/navigation';
 
 export default function Vendor() {
   const [vendor, setVendor] = useState<Vendor>();
@@ -18,10 +19,13 @@ export default function Vendor() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [editingVendor, setEditingVendor] = useState<Vendor>();
 
+  const router = useRouter();
+
   useEffect(() => {
     if(sessionStorage.getItem('role') !== 'vendor') {
-      window.location.href = '/';
-    }
+      router.push('/');
+      window.location.reload();
+  }
     VendorService.getMyVendor()
         .then((res) => {
             setVendor(res.data);
@@ -127,8 +131,8 @@ export default function Vendor() {
           (<p className='pl-12'>No reviews yet</p>) : (
           reviews.map((review) => (
             <div className="border p-4 space-y-1">
-              <p>{review.score}/5</p>
-              <p>{review.description}</p>
+              <p className='font-bold'>Score: {review.score}/5</p>
+              <p className='px-2 text-gray-700'>{review.description}</p>
             </div>
           )))}
         </div>

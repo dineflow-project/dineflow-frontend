@@ -7,6 +7,7 @@ import { Menu } from '@/Interfaces/MenuInterface';
 import VendorService from '@/services/VendorService';
 import MenuService from '@/services/MenuService';
 import { Vendor } from '@/Interfaces/VendorInterface';
+import { useRouter } from 'next/navigation';
 
 export default function Menu() {
     const [vendor, setVendor] = useState<Vendor>();
@@ -15,9 +16,12 @@ export default function Menu() {
     const [isNewMenu, setIsNewMenu] = useState<boolean>(true);
     const [showModal, setShowModal] = useState(false);
 
+    const router = useRouter();
+
     useEffect(() => {
         if(sessionStorage.getItem('role') !== 'vendor') {
-            window.location.href = '/';
+            router.push('/');
+            window.location.reload();
         }
         VendorService.getMyVendor()
             .then((res) => {
@@ -132,7 +136,7 @@ export default function Menu() {
                                     Add Menu
                                 </button>
                         </div>
-                        {!menus || menus.length === 0 ? <p>Loading menu...</p> :
+                        {!menus ? <p>Loading menu...</p> :
                         <table className="min-w-min max-w-5xl w-full border-collapse">
                                 <thead>
                                         <tr>

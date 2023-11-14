@@ -5,6 +5,7 @@ import MenuService from "@/services/MenuService";
 import OrderService from "@/services/OrderService";
 import VendorService from "@/services/VendorService";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
 export default function Order() {
@@ -14,9 +15,12 @@ export default function Order() {
     const [menus, setMenus] = useState<Menu[]>([]);
     const [showOrder, setShowOrder] = useState<Map<string, boolean>>(new Map());
 
+    const router = useRouter();
+
     useEffect(() => {
         if(sessionStorage.getItem('role') !== 'vendor') {
-            window.location.href = '/';
+            router.push('/');
+            window.location.reload();
         }
         VendorService.getMyVendor()
             .then((res) => {
@@ -143,11 +147,11 @@ export default function Order() {
                 <button
                     type="button"
                     className={`btn ${
-                        activeTab === "finished"
+                        activeTab === "finish"
                             ? "btn-primary font-bold underline"
                             : "btn-secondary"
                     } p-2 w-1/3 text-xl`}
-                    onClick={() => setActiveTab("finished")}
+                    onClick={() => setActiveTab("finish")}
                 >
                     Completed
                 </button>
@@ -161,9 +165,10 @@ export default function Order() {
                         <div key={order.id}>
                             <div className="flex flex-row justify-between p-2">
                                 <p>Order ID: {order.id}</p>
+                                <p className="ml-auto pr-4">${order.price}</p>
                                 <button
                                     type="button"
-                                    className="btn btn-primary"
+                                    className="btn btn-primary mx-4"
                                     onClick={() => {
                                         const newShowOrder = new Map(showOrder);
                                         newShowOrder.set(order.id!, !showOrder.get(order.id!));
@@ -180,19 +185,19 @@ export default function Order() {
                                         x{orderMenu.amount}
                                         {"\t"}
                                         {menus.find(
-                                            (menu) => menu.id === orderMenu.menu_id
+                                            (menu) => menu.id == orderMenu.menu_id
                                         )?.name}
                                     </p>))
                             }
                             {showOrder.get(order.id!) && 
-                                (order.status !== "finished" ? <>
+                                (order.status !== "finish" ? <>
                                     <div className="flex flex-row px-8">
                                     <button
                                         type="button"
                                         className={`btn btn-primary ml-auto px-4 py-2 mb-2 w-32 rounded ${order.status === "waiting" ? "bg-green-200 hover:bg-green-300" : "bg-blue-200 hover:bg-blue-300"}`}
                                         onClick={() => {
                                             axios.put(`http://localhost:8000/order/${order.id}`, {
-                                                status: order.status === "waiting" ? "cooking" : "finished",
+                                                status: order.status === "waiting" ? "cooking" : "finish",
                                             })
                                                 .then((res) => {
                                                     const newOrders = [...orders];

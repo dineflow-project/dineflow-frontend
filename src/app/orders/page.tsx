@@ -109,9 +109,12 @@ const Orders = () => {
         </h2>
         {filteredOrders.map((order) => (
           <div key={order.id} className="bg-white p-6 rounded-lg shadow mb-4">
+            <div className="flex flex-row justify-between">
             {order.vendor_name && (
-              <p className=" text-lg font-bold">{order.vendor_name}</p>
+              <p className="text-lg font-bold">{order.vendor_name}</p>
             )}
+            <p className="pr-4">${order.price}</p>
+            </div>
             <p className="text-sm text-gray-700">(Order ID: {order.id})</p>
             {/* <p className="text-gray-700">User ID: {order.user_id}</p> */}
             <div className="mt-2">

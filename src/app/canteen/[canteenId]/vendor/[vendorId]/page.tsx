@@ -271,7 +271,7 @@ export default function VendorPage({
       <div className="bg-slate-50 p-5 rounded-lg">
         {menus.filter((menu) => menu.is_available === "yes").length === 0 ? (
           <p className="text-red-500 font-semibold p-10 m-10">
-            Sorry, we're running out of food.
+            Sorry, no menu available.
           </p>
         ) : (
           <div className="p-2 flex-wrap">
