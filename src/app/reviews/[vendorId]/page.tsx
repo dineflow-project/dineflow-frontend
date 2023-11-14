@@ -123,7 +123,7 @@ export default function Review({ params }: { params: { vendorId: bigint } }) {
       </div>
 
       <h1 className="text-xl font-bold mt-8">Reviews for Vendor</h1>
-      <h3> Average Score: {avgScore ? avgScore.toFixed(2) : "no review"}</h3>
+      <h3> Average Score: {avgScore ? avgScore.toFixed(1) : "no review"}</h3>
 
       <div>
         {/* Display existing reviews */}
@@ -133,7 +133,7 @@ export default function Review({ params }: { params: { vendorId: bigint } }) {
             className="mb-4 p-4 border border-gray-300 rounded-md"
           >
             <p className="text-lg font-semibold">Score: {review.score}</p>
-            <p className="text-gray-600">Description: {review.description}</p>
+            <p className="text-gray-600">{review.description}</p>
           </div>
         ))}
       </div>

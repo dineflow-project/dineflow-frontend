@@ -2,7 +2,7 @@ import { Menu } from "./MenuInterface";
 import { Vendor } from "./VendorInterface";
 
 export interface OrderMenu {
-  menu_id: string;
+  menu_id: bigint;
   amount: number;
   price: number;
   request?: string | null;

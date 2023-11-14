@@ -10,6 +10,7 @@ import {
   ClockIcon,
   CheckCircleIcon,
 } from "@heroicons/react/24/outline";
+import VendorService from "@/services/VendorService";
 
 const getNotificationTypeStyle = (type: string) => {
   switch (type) {
@@ -79,10 +80,19 @@ const NotificationPage = () => {
   const fetchNotifications = async () => {
     try {
       if (!userId) return null;
-      const response = await GetAllNotifiactions(userId); // Implement your service method
-      if (response.data) {
-        console.log(response.data);
-        setNotifications(response.data);
+      if (role == "vendor") {
+        const res = await VendorService.getMyVendor();
+        const response = await GetAllNotifiactions(res.data!.id.toString());
+        if (response.data) {
+          console.log(response.data);
+          setNotifications(response.data);
+        }
+      } else {
+        const response = await GetAllNotifiactions(userId); // Implement your service method
+        if (response.data) {
+          console.log(response.data);
+          setNotifications(response.data);
+        }
       }
     } catch (error) {
       console.error("Error fetching notifications:", error);

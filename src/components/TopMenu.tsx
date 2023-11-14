@@ -16,22 +16,34 @@ import { useRouter } from "next/navigation";
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
-const navigation = [
+type NavigationItem = {
+  name: string;
+  href: string;
+};
+
+const navigationUser: NavigationItem[] = [
   { name: "All Canteens", href: "/" },
-  {
-    name: "Order History",
-    href: "/orders",
-  },
-  {
-    name: "Notification",
-    href: "/noti",
-  },
+  { name: "Order History", href: "/orders" },
+  { name: "Notification", href: "/noti" },
+];
+
+const navigationVendor: NavigationItem[] = [
+  { name: "Vendor", href: "/admin" },
+  { name: "Orders", href: "/admin/order" },
+  { name: "Menu", href: "/admin/menu" },
+  { name: "Notification", href: "/noti" },
+];
+
+const navigationNotLogin: NavigationItem[] = [
+  { name: "All Canteens", href: "/" },
 ];
 const TopMenu = () => {
   const router = useRouter();
 
   // const { isLoggedIn } = useAuth();
   const { isAuthenticated, user, loading } = useAuth();
+  // const [userId, setUserId] = useState<string | null>(sessionStorage.getItem("userId"));
+  // const [role, setRole] = useState<string | null>(sessionStorage.getItem("role"));
   // You can use isAuthenticated, user, and loading in your component logic
   // console.log(
   //   "TopMenu component rendering with authentication state:",
@@ -60,20 +72,27 @@ const TopMenu = () => {
   const userId = sessionStorage.getItem("userId");
   // console.log("userId from sessionStorage ", user?.id, " role ", user?.role);
   // console.log("top menuu sessionStorage", sessionStorage);
+  let navigation: NavigationItem[] = [];
+  if (!userId) {
+    // User is not logged in
+    navigation = navigationNotLogin;
+  } else if (role === "user") {
+    // User is logged in and has the role "user"
+    navigation = navigationUser;
+  } else if (role === "vendor") {
+    // User is logged in and has the role "vendor"
+    navigation = navigationVendor;
+  }
 
   const logout = () => {
     sessionStorage.clear();
-    // console.log("userId", userId);
-    // setUserId(null);
-    // setRole(null);
-    console.log("logout", sessionStorage);
+    console.log("check");
+    router.push("/");
     Swal.fire({
       icon: "success",
       title: "Logout Success",
       text: "You have successfully logged out",
     }).then(() => {
-      router.push("/");
-      // router.refresh();
       window.location.reload();
     });
   };
@@ -146,7 +165,7 @@ const TopMenu = () => {
                       leaveTo="transform opacity-0 scale-95"
                     >
                       <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                        <Menu.Item>
+                        {/* <Menu.Item>
                           {({ active }: { active: boolean }) => (
                             <Link
                               href="#"
@@ -158,7 +177,7 @@ const TopMenu = () => {
                               Your Profile
                             </Link>
                           )}
-                        </Menu.Item>
+                        </Menu.Item> */}
                         <Menu.Item>
                           {({ active }: { active: boolean }) => (
                             <Link

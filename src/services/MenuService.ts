@@ -47,7 +47,7 @@ const MenuService = {
   createMenu: async (menuRequest: Menu) => {
     const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/menu`;
-    const axios_res = await axios.post(path, { headers });
+    const axios_res = await axios.post(path, menuRequest, { headers });
     // const axios_res = await axios.post(path, menuRequest);
     const res = axios_res.data as ApiResponse<Menu>;
     if(!isResponseOk(res)) {
@@ -71,8 +71,7 @@ const MenuService = {
   updateMenuById: async (id: bigint, updatedMenu: Menu) => {
     const headers = getEmptyHeaderWithBearerToken();
     const path = `${appConfig.BACKEND_API_URL}/menu/${id}`;
-    const axios_res = await axios.put(path, { headers });
-    // const axios_res = await axios.put(path,updatedMenu);
+    const axios_res = await axios.put(path, updatedMenu, { headers });
     const res = axios_res.data as ApiResponse<Menu>;
     if(!isResponseOk(res)) {
       throw new ApiErrorResponse(res.code, res.error ?? "Unknown error");
