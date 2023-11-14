@@ -72,8 +72,9 @@ const TopMenu = () => {
       title: "Logout Success",
       text: "You have successfully logged out",
     }).then(() => {
-      router.refresh();
       router.push("/");
+      // router.refresh();
+      window.location.reload();
     });
   };
 
