@@ -60,14 +60,16 @@ export default function Vendor() {
     <>
       <div className="p-4 space-y-4 block max-w-5xl m-auto">
         <div className="flex flex-row px-10 py-2">
-          <Image
-              src="https://media.discordapp.net/attachments/1171496314807267378/1171496484542361640/photo-1565299624946-b28f40a0ae38.png?ex=655ce41f&is=654a6f1f&hm=e7f4a7caf3ca680889ad63611fdc49e2ab35aba3724218f94619f1d4eb913a19&=&width=458&height=553"
-              alt="Menu Picture"
-              width={300}
-              height={300}
-              style={{ maxHeight: '300px', maxWidth: '300px' }}
-              className="rounded-lg"
-          />
+          {vendor.image_path.startsWith('http') ? (
+              <Image
+                  src={vendor.image_path}
+                  alt="Vendor Picture"
+                  width={300}
+                  height={300}
+                  style={{ maxHeight: '300px', maxWidth: '300px' }}
+                  className="rounded-lg"
+              />
+            ) : <div className='flex w-72 h-72 rounded-lg border-2 border-gray-300'><p className='m-auto'>No Image</p></div>}
           <div className="flex flex-col justify-center ml-16">
             <h1 className="text-3xl font-bold pb-8">{vendor.name}</h1> 
             <p>Canteen: {canteen?.name}</p>
