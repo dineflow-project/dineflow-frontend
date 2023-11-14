@@ -16,6 +16,9 @@ export default function Menu() {
     const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
+        if(sessionStorage.getItem('role') !== 'vendor') {
+            window.location.href = '/';
+        }
         VendorService.getMyVendor()
             .then((res) => {
                 setVendor(res.data);

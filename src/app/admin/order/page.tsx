@@ -15,6 +15,9 @@ export default function Order() {
     const [showOrder, setShowOrder] = useState<Map<string, boolean>>(new Map());
 
     useEffect(() => {
+        if(sessionStorage.getItem('role') !== 'vendor') {
+            window.location.href = '/';
+        }
         VendorService.getMyVendor()
             .then((res) => {
                 setVendor(res.data);

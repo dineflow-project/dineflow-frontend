@@ -19,6 +19,9 @@ export default function Vendor() {
   const [editingVendor, setEditingVendor] = useState<Vendor>();
 
   useEffect(() => {
+    if(sessionStorage.getItem('role') !== 'vendor') {
+      window.location.href = '/';
+    }
     VendorService.getMyVendor()
         .then((res) => {
             setVendor(res.data);
